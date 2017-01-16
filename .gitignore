@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Pycharm
+.idea/
+
+# Project Specific
+Export.xml
+output/
+
 # C extensions
 *.so
 
