@@ -9,6 +9,7 @@ __pycache__/
 # Project Specific
 Export.xml
 output/
+reference/
 
 # C extensions
 *.so

@@ -3,74 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ module.title }}</title>
+    <link rel="stylesheet" type="text/css" href="../bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="../vs.css" />
 </head>
 <body>
-<table>
-    <TR>
-        <TD class="c2" colspan="2">{{ module.title }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">GUID</TD>
-        <TD class="c2">{{ module.guid }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Enabled</TD>
-        <TD class="c2">{{ module.enabled }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Description</TD>
-        <TD class="c2">{{ module.description }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Version</TD>
-        <TD class="c2">{{ module.verison }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Version Comment</TD>
-        <TD class="c2">{{ module.versioncomment }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Folder Path</TD>
-        <TD class="c2">{{ module.folderpath }}</TD>
-    </TR>
-    <TR>
-        <TD colspan="2">Parameters</TD>
-    </TR>
-    {% for parameter in module.parameters %}
-    <TR>
-        <TD class="c1">Name</TD>
-        <TD class="c2">{{ parameter.name }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Type</TD>
-        <TD class="c2">{{ parameter.type }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Value</TD>
-        <TD class="c2">{{ parameter.value }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Description</TD>
-        <TD class="c2">{{ parameter.description }}</TD>
-    </TR>
-    {% endfor %}
-    <TR>
-        <TD colspan="2">Tasks</TD>
-    </TR>
-    {% for task in module.tasks %}
-    <TR>
-        <TD class="c1">Type</TD>
-        <TD class="c2">{{ task.type }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">GUID</TD>
-        <TD class="c2">{{ task.guid }}</TD>
-    </TR>
-    <TR>
-        <TD class="c1">Enabled</TD>
-        <TD class="c2">{{ task.enabled }}</TD>
-    </TR>
-    {% endfor %}
-</table>
+<div id="content">
+    <table>
+        <TR>
+            <TD class="title-1" colspan="2">{{ module.title }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">GUID</TD>
+            <TD class="c2">{{ module.guid }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Enabled</TD>
+            <TD class="c2">{{ module.enabled }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Description</TD>
+            <TD class="c2">{{ module.description }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Version</TD>
+            <TD class="c2">{{ module.verison }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Version Comment</TD>
+            <TD class="c2">{{ module.versioncomment }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Folder Path</TD>
+            <TD class="c2">{{ module.folderpath }}</TD>
+        </TR>
+        <TR>
+            <TD class="title-2" colspan="2">Parameters</TD>
+        </TR>
+        {% for parameter in module.parameters %}
+        <TR>
+            <TD class="c1">Name</TD>
+            <TD class="c2">{{ parameter.name }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Type</TD>
+            <TD class="c2">{{ parameter.type }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Value</TD>
+            <TD class="c2">{{ parameter.value }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Description</TD>
+            <TD class="c2">{{ parameter.description }}</TD>
+        </TR>
+        {% endfor %}
+        <TR>
+            <TD class="title-2" colspan="2">Tasks</TD>
+        </TR>
+        {% for task in module.tasks %}
+        <TR>
+            <TD class="c1">Type</TD>
+            <TD class="c2">{{ task.type }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">GUID</TD>
+            <TD class="c2">{{ task.guid }}</TD>
+        </TR>
+        <TR>
+            <TD class="c1">Enabled</TD>
+            <TD class="c2">{{ task.enabled }}</TD>
+        </TR>
+        {{ task.settings|safe }}
+        {% endfor %}
+    </table>
+</div>
 </body>
 </html>

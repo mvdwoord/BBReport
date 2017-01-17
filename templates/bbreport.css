@@ -1,0 +1,23 @@
+#content {
+  width: 1080px ;
+  margin-left: 120px ;
+  margin-right: auto ;
+}
+
+table {
+    table-layout: fixed;
+}
+
+TD.title-1 {
+  font-size: x-large;
+  background-color: #466BB0;
+  color: white;
+  text-align: center;
+}
+
+TD.title-2 {
+  font-size: larger;
+  background-color: #466BB0;
+  color: white;
+  text-align: center;
+}

@@ -11,7 +11,9 @@ from lxml import etree
 from jinja2 import Environment, PackageLoader, select_autoescape
 env = Environment(
     loader=PackageLoader('bbreport', 'templates'),
-    autoescape=select_autoescape(['html', 'xml'])
+    autoescape=select_autoescape(['html', 'xml']),
+    trim_blocks=True,
+    extensions=['jinja2_highlight.HighlightExtension']
 )
 
 # GPL
@@ -57,6 +59,8 @@ def bbprocess(bb):
             # clear output directory
             shutil.rmtree(output_folder)
             os.makedirs(output_folder)
+            shutil.copyfile('./templates/bbreport.css', './output/bbreport.css')
+            shutil.copyfile('./templates/vs.css', './output/vs.css')
             bbtree = (etree.parse(buildingblock))
             moduleroot = bbtree.find("/buildingblock/modules")
             if len(moduleroot) > 0:
@@ -84,15 +88,37 @@ def parameter_to_dict(p):
 
 
 def task_to_dict(t):
-    type = t.find('.//properties/type').text
+    """Returns a dictionary from a task xml element"""
+    # Determine type and gather common info
+    tasktype = t.find('.//properties/type').text
     taskdict = {
-        'type': type,
+        'type': tasktype,
         'guid': t.find('.//properties/guid').text,
         'enabled': t.find('.//properties/enabled').text
     }
-    if type == "PWRSHELL":
-        pass
+    # Tasks have type specific properties which need to be dealt with individually
+    # We'll use the 'settings' of the taskdict to store a rendered partial table
+    # based of the type's template. To be included in the main module template.
+    if tasktype == "PWRSHELL":
+        # usescript indicates if the script tab is used. If not, the source code
+        # needs to come from a resource. Value is always yes or no.
+        usescript = t.find('.//settings/usescript').text
+        if usescript == 'yes':
+            pwrshell = {
+                'source': "Script Tab",
+                'code': t.find('.//settings/source').text
+            }
+        else:
+            pwrshell = {
+                'source': "Resource File",
+                'resourcename': t.find('.//settings/resourcename').text,
+                'resourceguid': t.find('.//settings/resourceguid').text,
+                # ToDo grab and base64 decode source from XBB
+                'code': 'To Be Decoded somehow...'
+            }
+        taskdict['settings'] = env.get_template('PWRSHELL.html').render(pwrshell=pwrshell)
 
+    # Finally we return the dictionary to the caller.
     return taskdict
 
 
