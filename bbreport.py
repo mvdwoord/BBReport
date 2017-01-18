@@ -3,8 +3,10 @@
 
 # import builtins
 import argparse
-import shutil
+import binascii
 import os
+import shutil
+import zlib
 
 # import 3rd party
 from lxml import etree
@@ -50,6 +52,10 @@ parameter_type = {
     '0': 'Text'
 }
 
+# Global variable to hold the full Building Block tree for cross referencing.
+# Might want to refactor, but perhaps the structure of RES xml won't allow for that.
+bbtree = ''
+
 
 def bbprocess(bb):
     """Open Building Block file, parse as xml and dispatch thes sections to their respective parser functions"""
@@ -61,12 +67,34 @@ def bbprocess(bb):
             os.makedirs(output_folder)
             shutil.copyfile('./templates/bbreport.css', './output/bbreport.css')
             shutil.copyfile('./templates/vs.css', './output/vs.css')
+            global bbtree
             bbtree = (etree.parse(buildingblock))
+            # First item of business is creating all module pages
             moduleroot = bbtree.find("/buildingblock/modules")
             if len(moduleroot) > 0:
                 os.makedirs(output_folder + '/modules')
                 for element in moduleroot.getchildren():
                     create_module_page(element)
+
+            # Finally we create an index page to tie it all together
+            index = {
+                'filename': bb,
+                'modules': []
+            }
+            for module_element in bbtree.findall('/buildingblock/modules/module'):
+                module_name = module_element.find('.//properties/name').text
+                module_guid = module_element.find('.//properties/guid').text
+                module = {
+                    'name': module_name,
+                    'guid': module_guid
+                }
+                index['modules'].append(module)
+
+            template = env.get_template('index.html')
+            html = template.render(index=index)
+            filename = output_folder + '/index.html'
+            with open(filename, 'wt', encoding='utf-8') as file:
+                file.write(html)
 
     except IOError as err:
         print("Error opening {}\n{}".format(bb, err))
@@ -118,6 +146,96 @@ def task_to_dict(t):
             }
         taskdict['settings'] = env.get_template('PWRSHELL.html').render(pwrshell=pwrshell)
 
+    elif tasktype == "SHUTDOWN":
+        message = t.find('.//settings/message').text
+        reboot = t.find('.//settings/reboot').text
+        force = t.find('.//settings/force').text
+        check4users = t.find('.//settings/check4users').text
+        timeout = t.find('.//settings/timeout').text
+        shutdown = {
+            'message': message,
+            'reboot': reboot,
+            'force': force,
+            'check4users': check4users,
+            'timeout': timeout
+        }
+        if message == 'yes':
+            messagetext = t.find('.//settings/messagetext').text
+            duration = t.find('.//settings/duration').text
+            shutdown['messagetext'] = messagetext
+            shutdown['duration'] = duration
+        if reboot == 'yes':
+            waitforreboot = t.find('.//settings/waitforreboot').text
+            shutdown['waitforreboot'] = waitforreboot
+
+        taskdict['settings'] = env.get_template('SHUTDOWN.html').render(shutdown=shutdown)
+
+    elif tasktype == "DOWNLOAD":
+        ysnlog = t.find('.//settings/ysnlog').text
+        ysndestination = t.find('.//settings/ysndestination').text
+        download = {
+            'ysnlog': ysnlog,
+            'ysndestination': ysndestination,
+            'resources': []
+        }
+        if ysndestination == 'yes':
+            destination = t.find('.//settings/destination').text
+            download['destination'] = destination
+        resources_string = t.find('.//settings/resources').text
+        for resourceguid in resources_string.split(','):
+            xpath = '//resource[properties/guid="' + resourceguid + '"]'
+            resource_element = bbtree.xpath(xpath)[0]
+            guid = resource_element.find('.//properties/guid').text
+            version = resource_element.find('.//properties/version').text
+            versioncomment = resource_element.find('.//properties/versioncomment').text
+            resourcetype = resource_element.find('.//properties/type').text
+            resource = {
+                'guid': guid,
+                'version': version,
+                'versioncomment': versioncomment,
+                'type': resourcetype
+            }
+            # Here we add the resource type specific attributes
+            if resourcetype == 'DATABASE':
+                resource['file'] = resource_element.find('.//properties/file').text
+                resource['parsefilecontent'] = resource_element.find('.//properties/parsefilecontent').text
+                resource['skipenvironmentvariables'] = resource_element.find('.//properties/skipenvironmentvariables').text
+                resource['comment'] = resource_element.find('.//properties/comment').text
+                resource['enabled'] = resource_element.find('.//properties/enabled').text
+                resource['crc32'] = resource_element.find('.//properties/crc32').text
+                resource['folderpath'] = '/'.join([f.text for f in resource_element.findall('.//folder/name')])
+            elif resourcetype == 'FILESHARE':
+                resource['file'] = resource_element.find('.//properties/file').text
+            elif resourcetype == 'AMRESOURCEPACKAGE':
+                resource['name'] = resource_element.find('.//properties/name').text
+            elif resourcetype == 'URLRESOURCE':
+                resource['file'] = resource_element.find('.//properties/file').text
+
+            download['resources'].append(resource)
+
+        taskdict['settings'] = env.get_template('DOWNLOAD.html').render(download=download)
+
+    elif tasktype == 'FILEOPERATIONS':
+        fileoperationtasks = []
+        for task_element in t.findall('.//fileoperationtask'):
+            fileoperationtask = {
+                'type': task_element.find('.//type').text,
+                'sourcelocation': task_element.find('.//sourcelocation').text,
+                'hasdestination': False
+            }
+            if fileoperationtask['type'] in ['copy', 'move', 'rename']:
+                fileoperationtask['hasdestination'] = True
+                fileoperationtask['destinationlocation'] = task_element.find('.//destinationlocation').text
+            # ToDo add support for ini file manipulation
+            fileoperationtasks.append(fileoperationtask)
+
+        taskdict['settings'] = env.get_template('FILEOPERATIONS.html').render(fileoperationtasks=fileoperationtasks)
+
+    elif tasktype == 'REGISTRY':
+        registryfile = unreszlib(t.find('.//regfile').text)
+
+        taskdict['settings'] = env.get_template('REGISTRY.html').render(registryfile=registryfile)
+
     # Finally we return the dictionary to the caller.
     return taskdict
 
@@ -152,13 +270,22 @@ def create_module_page(e):
         file.write(html)
 
 
+def unreszlib(reszlib):
+    """Helper function to extract text from RESZLIB values"""
+    return zlib.decompress(binascii.unhexlify(reszlib[22:])).decode("utf-8")
+
+
 def main():
     """Main function, checks for arguments and default files."""
     parser = argparse.ArgumentParser()
-    parser.parse_args()
+    parser.add_argument('-f', '--file',
+                        default='./Export.xml',
+                        metavar='BuildingBlock',
+                        help='The Building Block XML File to process')
+    args = parser.parse_args()
     # ToDo Add argument handler for input file
     # For now we grab cwd/Export.xml or busto
-    buildingblock = './Export.xml'
+    buildingblock = args.file
     bbprocess(buildingblock)
 
 if __name__ == "__main__":

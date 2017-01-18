@@ -1,3 +1,13 @@
+/*
+5 shades out of base color.
+
+Color_100 = #466BB0
+Color_80  = #6B89C0
+Color_60  = #90A6D0
+Color_40  = #B5C4DF
+Color_20  = #DAE1EF
+*/
+
 #content {
   width: 1080px ;
   margin-left: 120px ;
@@ -5,7 +15,54 @@
 }
 
 table {
-    table-layout: fixed;
+  width: 100%;
+}
+
+TD.column-header {
+  background-color: #DAE1EF;
+  font-weight: bold;
+}
+
+TD:first-of-type {
+  width: 150px;
+}
+
+TD.cell-emphasize {
+  font-weight: bold;
+}
+
+TD.index-header {
+  background-color: #6B89C0;
+  font-weight: bold;
+  font-size: x-large;
+  color: white;
+  text-align: center;
+}
+
+TD.index-listitem {
+/* */
+}
+
+TD.linenos {
+  width: 30px;
+  text-align: right;
+  color: darkgray;
+}
+
+TD.label-FILEOPERATIONS {
+  width: 100px;
+}
+
+TD.label-PWRSHELL{
+  width: 100px;
+}
+
+TD.label-SHUTDOWN {
+  width: 400px;
+}
+
+TD.code {
+  padding-left: 10px;
 }
 
 TD.title-1 {
@@ -13,11 +70,13 @@ TD.title-1 {
   background-color: #466BB0;
   color: white;
   text-align: center;
+  padding: 5px;
 }
 
 TD.title-2 {
   font-size: larger;
-  background-color: #466BB0;
+  background-color: #6B89C0;
   color: white;
   text-align: center;
+  padding: 3px;
 }

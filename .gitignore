@@ -10,6 +10,7 @@ __pycache__/
 Export.xml
 output/
 reference/
+*.zip
 
 # C extensions
 *.so

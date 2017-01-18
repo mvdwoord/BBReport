@@ -1,0 +1,26 @@
+{# Template for DOWNLOAD tasks #}
+    <table>
+        <TR><TD class="label-DOWNLOAD">Enable logging</TD><TD>{{ download.ysnlog }}</TD></TR>
+        <TR><TD class="label-DOWNLOAD">Number of Resources</TD><TD>{{ download.resources|length }}</TD></TR>
+        <TR><TD class="label-DOWNLOAD">Specify destination folder</TD><TD>{{ download.ysndestination }}</TD></TR>
+        {% if download.ysndestination == "yes" %}
+            <TR><TD class="label-DOWNLOAD">Folder</TD><TD>{{ download.destination }}</TD></TR>
+        {% endif %}
+    </table>
+    <table>
+        {% for resource in download.resources %}
+        <TR><TD class="column-header">GUID</TD><TD class="column-header">{{ resource.guid }}</TD></TR>
+        <TR><TD>Version</TD><TD>{{ resource.version }}</TD></TR>
+        <TR><TD>Version Comment</TD><TD>{{ resource.versioncomment }}</TD></TR>
+        <TR><TD>Type</TD><TD>{{ resource.type }}</TD></TR>
+        {% if resource.type == "DATABASE" %}
+        <TR><TD>Filename</TD><TD class="cell-emphasize">{{ resource.file }}</TD></TR>
+        <TR><TD>Parse variables, parameters and functions in content</TD><TD>{{ resource.parsefilecontent }}</TD></TR>
+        <TR><TD>Skip parsing of environment variables</TD><TD>{{ resource.skipenvironmentvariables }}</TD></TR>
+        <TR><TD>Comment</TD><TD>{{ resource.comment }}</TD></TR>
+        <TR><TD>Enabled</TD><TD>{{ resource.enabled }}</TD></TR>
+        <TR><TD>CRC32</TD><TD>{{ resource.crc32 }}</TD></TR>
+        <TR><TD>Folder Path</TD><TD>{{ resource.folderpath }}</TD></TR>
+        {% endif %}
+        {% endfor %}
+    </table>

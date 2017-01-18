@@ -1,0 +1,15 @@
+{# Template for SHUTDOWN tasks #}
+    <table>
+        <TR><TD class="label-SHUTDOWN">Show shutdown dialog box message on console</TD><TD>{{ shutdown.message }}</TD></TR>
+        {% if shutdown.message == "yes" %}
+            <TR><TD class="label-SHUTDOWN">Duration in seconds</TD><TD>{{ shutdown.duration }}</TD></TR>
+            <TR><TD class="label-SHUTDOWN" colspan="2">{{ shutdown.messagetext }}</TD></TR>
+        {% endif %}
+        <TR><TD class="label-SHUTDOWN">Reboot</TD><TD>{{ shutdown.reboot }}</TD></TR>
+        {% if shutdown.reboot == "yes" %}
+            <TR><TD class="label-SHUTDOWN">Wait for Agent to come back online</TD><TD>{{ shutdown.waitforreboot }}</TD></TR>
+        {% endif %}
+        <TR><TD class="label-SHUTDOWN">Force close of running applications</TD><TD>{{ shutdown.force }}</TD></TR>
+        <TR><TD class="label-SHUTDOWN">Shutdown timeout in minutes</TD><TD>{{ shutdown.timeout }}</TD></TR>
+        <TR><TD class="label-SHUTDOWN">Fail shutdown if user is logged on</TD><TD>{{ shutdown.check4users }}</TD></TR>
+    </table>

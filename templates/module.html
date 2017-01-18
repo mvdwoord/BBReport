@@ -9,73 +9,38 @@
 <body>
 <div id="content">
     <table>
-        <TR>
-            <TD class="title-1" colspan="2">{{ module.title }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">GUID</TD>
-            <TD class="c2">{{ module.guid }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Enabled</TD>
-            <TD class="c2">{{ module.enabled }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Description</TD>
-            <TD class="c2">{{ module.description }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Version</TD>
-            <TD class="c2">{{ module.verison }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Version Comment</TD>
-            <TD class="c2">{{ module.versioncomment }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Folder Path</TD>
-            <TD class="c2">{{ module.folderpath }}</TD>
-        </TR>
-        <TR>
-            <TD class="title-2" colspan="2">Parameters</TD>
+        <TR><TD class="title-1" colspan="2">{{ module.title }}</TD></TR>
+        <TR><TD>GUID</TD>            <TD>{{ module.guid }}</TD></TR>
+        <TR><TD>Enabled</TD>         <TD>{{ module.enabled }}</TD></TR>
+        <TR><TD>Description</TD>     <TD>{{ module.description }}</TD></TR>
+        <TR><TD>Version</TD>         <TD>{{ module.verison }}</TD></TR>
+        <TR><TD>Version Comment</TD> <TD>{{ module.versioncomment }}</TD></TR>
+        <TR><TD>Folder Path</TD>     <TD>{{ module.folderpath }}</TD></TR>
+    </table>
+    {% if module.parameters|length > 0 %}
+    <table>
+        <TR><TD class="title-2" colspan="4">Parameters</TD></TR>
+        <TR><TD class="column-header">Name</TD>
+            <TD class="column-header">Type</TD>
+            <TD class="column-header">Default Value</TD>
+            <TD class="column-header">Description</TD>
         </TR>
         {% for parameter in module.parameters %}
-        <TR>
-            <TD class="c1">Name</TD>
-            <TD class="c2">{{ parameter.name }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Type</TD>
-            <TD class="c2">{{ parameter.type }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Value</TD>
-            <TD class="c2">{{ parameter.value }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Description</TD>
-            <TD class="c2">{{ parameter.description }}</TD>
-        </TR>
-        {% endfor %}
-        <TR>
-            <TD class="title-2" colspan="2">Tasks</TD>
-        </TR>
-        {% for task in module.tasks %}
-        <TR>
-            <TD class="c1">Type</TD>
-            <TD class="c2">{{ task.type }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">GUID</TD>
-            <TD class="c2">{{ task.guid }}</TD>
-        </TR>
-        <TR>
-            <TD class="c1">Enabled</TD>
-            <TD class="c2">{{ task.enabled }}</TD>
-        </TR>
-        {{ task.settings|safe }}
+        <TR><TD>{{ parameter.name }}</TD>
+            <TD>{{ parameter.type }}</TD>
+            <TD>{{ parameter.value }}</TD>
+            <TD>{{ parameter.description }}</TD></TR>
         {% endfor %}
     </table>
+    {% endif %}
+    {% for task in module.tasks %}
+    <table>
+        <TR><TD class="title-2" colspan="2">Task - {{ task.type }}</TD></TR>
+        <TR><TD class="label-{{ task.type }}">GUID</TD>    <TD>{{ task.guid }}</TD></TR>
+        <TR><TD class="label-{{ task.type }}">Enabled</TD> <TD>{{ task.enabled }}</TD></TR>
+    </table>
+    {{ task.settings|safe }}
+    {% endfor %}
 </div>
 </body>
 </html>
