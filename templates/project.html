@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ project.title }}</title>
+    <link rel="stylesheet" type="text/css" href="../bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="../vs.css" />
+</head>
+<body>
+<div id="content">
+    <table>
+        <tr><td class="title-1" colspan="2">{{ project.title }}</td></tr>
+        <tr><td>GUID</td>            <td>{{ project.guid }}</td></tr>
+        <tr><td>Enabled</td>         <td>{{ project.enabled }}</td></tr>
+        <tr><td>Description</td>     <td>{{ project.description }}</td></tr>
+        <tr><td>Version</td>         <td>{{ project.version }}</td></tr>
+        <tr><td>Version Comment</td> <td>{{ project.versioncomment }}</td></tr>
+        <tr><td>Folder Path</td>     <td>{{ project.folderpath }}</td></tr>
+    </table>
+    {% if project.parameters|length > 0 %}
+    <table>
+        <tr><td class="title-2" colspan="4">Parameters</td></tr>
+        <tr><td class="column-header">Name</td>
+            <td class="column-header">Type</td>
+            <td class="column-header">Default Value</td>
+            <td class="column-header">Description</td>
+        </tr>
+        {% for parameter in project.parameters %}
+        <tr><td>{{ parameter.name }}</td>
+            <td>{{ parameter.type }}</td>
+            <td>{{ parameter.value }}</td>
+            <td>{{ parameter.description }}</td></tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <table>
+        <tr><td class="title-2" colspan="3">Modules</td></tr>
+        <tr><td class="column-header">Name</td>
+            <td class="column-header">Enabled</td>
+            <td class="column-header">GUID</td>
+        </tr>
+        {% for module in project.modules %}
+        <tr>
+            <td><a href="../modules/{{ module.guid }}.html">{{ module.name }}</a></td>
+            <td>{{ module.enabled }}</td>
+            <td>{{ module.guid }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

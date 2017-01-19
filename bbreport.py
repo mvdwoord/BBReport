@@ -52,13 +52,60 @@ parameter_type = {
     '0': 'Text'
 }
 
+task_displayname = {
+    'PWRSHELL': "Execute Powershell Command",
+    'COMMAND': "Execute a Command",
+    'DOWNLOAD': "Download a resource",
+    'SHUTDOWN': "Shutdown or Reboot",
+    'REGISTRY': "Apply Registry Settings",
+    'FILEOPERATIONS': "PErform File Operations"
+}
+
+security_objecttype = {
+    '1': "Set NTFS File/Folder Permissions",
+    '2': "Set Registry Permissions",
+    '3': "Set Share Permissions",
+    '4': "Set Printer Permissions"
+}
+
+permission_action = {
+    '1': "Allow",
+    '2': "Deny",
+    '3': "Delete"
+}
+
+""" Access masks are a special beast.
+Full details: https://blogs.msdn.microsoft.com/openspecification/2010/04/01/about-the-access_mask-structure/
+but we will stick to the values used in AM"""
+access_mask = {
+    # -1 is used for deletions, mask is irrelevant in such cases
+    '-1': "",
+    # NTFS / Fileshare permissions
+    '1048854': "Write",
+    '1179785': "Read",
+    '1179817': "Read & Execute",
+    '1180063': "Read & Write",
+    '1180095': "Read, Write & Execute",
+    '1245631': "Modify",
+    '2032127': "Full Control",
+    # Registry permissions
+    '268435456': "Full Control",
+    '-2147483648': "Read",
+    # Printer permissions
+    '131080': "Print",
+    '983052': "Manage Printers",
+    '983088': "Manage Documents",
+    '983096': "Print & Manage Documents",
+    '983100': "Manage Printers & Documents"
+}
+
 # Global variable to hold the full Building Block tree for cross referencing.
 # Might want to refactor, but perhaps the structure of RES xml won't allow for that.
 bbtree = ''
 
 
-def bbprocess(bb):
-    """Open Building Block file, parse as xml and dispatch thes sections to their respective parser functions"""
+def process_buildingblock(bb):
+    """Open Building Block file, parse as xml and dispatch the sections to their respective parser functions"""
     try:
         with open(bb) as buildingblock:
             print("Processing {}".format(bb))
@@ -69,26 +116,44 @@ def bbprocess(bb):
             shutil.copyfile('./templates/vs.css', './output/vs.css')
             global bbtree
             bbtree = (etree.parse(buildingblock))
+
             # First item of business is creating all module pages
             moduleroot = bbtree.find("/buildingblock/modules")
             if len(moduleroot) > 0:
                 os.makedirs(output_folder + '/modules')
-                for element in moduleroot.getchildren():
-                    create_module_page(element)
+                for module in moduleroot.getchildren():
+                    create_module_page(module)
+
+            # Next up is creating all module pages
+            projectroot = bbtree.find("/buildingblock/projects")
+            if len(projectroot) > 0:
+                os.makedirs(output_folder + '/projects')
+                for project in projectroot.getchildren():
+                    create_project_page(project)
 
             # Finally we create an index page to tie it all together
             index = {
                 'filename': bb,
+                'projects': [],
                 'modules': []
             }
+            for project_element in bbtree.findall('/buildingblock/projects/project'):
+                project = {
+                    'name': project_element.find('.//properties/name').text,
+                    'guid': project_element.find('.//properties/guid').text
+                }
+                index['projects'].append(project)
+
             for module_element in bbtree.findall('/buildingblock/modules/module'):
-                module_name = module_element.find('.//properties/name').text
-                module_guid = module_element.find('.//properties/guid').text
                 module = {
-                    'name': module_name,
-                    'guid': module_guid
+                    'name': module_element.find('.//properties/name').text,
+                    'guid': module_element.find('.//properties/guid').text
                 }
                 index['modules'].append(module)
+
+            # Sort them alphabetically
+            index['projects'] = sorted(index['projects'], key=lambda k: k['name'])
+            index['modules'] = sorted(index['modules'], key=lambda k: k['name'])
 
             template = env.get_template('index.html')
             html = template.render(index=index)
@@ -115,12 +180,29 @@ def parameter_to_dict(p):
     return parameterdict
 
 
+def projectmodule_to_dict(p):
+    """Returns a dictionary from a module xml as linked from a project"""
+    guid = p.find('.//guid').text
+    xpath = '//modules/module/properties[guid/text()="' + guid + '"]'
+    module_element = bbtree.xpath(xpath)[0]
+    name = module_element.find('.//name').text
+    enabled = p.find('.//enabled').text
+    projectmoduledict = {
+        'guid': guid,
+        'name': name,
+        'enabled': enabled
+    }
+    return projectmoduledict
+
+
 def task_to_dict(t):
     """Returns a dictionary from a task xml element"""
     # Determine type and gather common info
     tasktype = t.find('.//properties/type').text
+    displayname = task_displayname.get(tasktype, "Unknown (" + tasktype + ")")
     taskdict = {
         'type': tasktype,
+        'displayname': displayname,
         'guid': t.find('.//properties/guid').text,
         'enabled': t.find('.//properties/enabled').text
     }
@@ -236,23 +318,44 @@ def task_to_dict(t):
 
         taskdict['settings'] = env.get_template('REGISTRY.html').render(registryfile=registryfile)
 
+    elif tasktype == 'SECURITY':
+
+        permission = {
+            'objecttype': security_objecttype[t.find('.//objecttype').text],
+            'filename': t.find('.//filename').text,
+            'replaceacl': t.find('.//replaceacl').text,
+            'propagate': t.find('.//propagate').text,
+            'permissions': []
+        }
+        # Special case for nicer display of task type
+        taskdict['displayname'] = permission['objecttype']
+        for permission_element in t.findall('.//permissions/permission'):
+            permission_item = {
+                'action': permission_action[permission_element.find('.//action').text],
+                'account': permission_element.find('.//account').text,
+                'right': access_mask[permission_element.find('.//permission').text]
+            }
+            permission['permissions'].append(permission_item)
+
+        taskdict['settings'] = env.get_template('SECURITY.html').render(permission=permission)
+
     # Finally we return the dictionary to the caller.
     return taskdict
 
 
-def create_module_page(e):
+def create_module_page(m):
     """Creates a html from jinja template and a module element"""
-    folderpath = '/'.join([f.text for f in e.findall('.//folder/name')])
-    paramroot = e.find('.//tasks/task/parameters')
+    folderpath = '/'.join([f.text for f in m.findall('.//folder/name')])
+    paramroot = m.find('.//tasks/task/parameters')
     # we need to grab the non hidden tasks, thanks RES
-    actual_tasks = e.xpath('.//tasks/task[not(@hidden)]')
+    actual_tasks = m.xpath('.//tasks/task[not(@hidden)]')
     module = {
-        'title': (e.find('.//name')).text,
-        'guid': (e.find('.//guid')).text,
-        'enabled': (e.find('.//enabled')).text,
-        'description': (e.find('.//description')).text,
-        'version': (e.find('.//version')).text,
-        'versioncomment': (e.find('.//versioncomment')).text,
+        'title': (m.find('.//name')).text,
+        'guid': (m.find('.//guid')).text,
+        'enabled': (m.find('.//enabled')).text,
+        'description': (m.find('.//description')).text,
+        'version': (m.find('.//version')).text,
+        'versioncomment': (m.find('.//versioncomment')).text,
         'folderpath': folderpath,
         'parameters': [],
         'tasks': []
@@ -262,10 +365,40 @@ def create_module_page(e):
             module['parameters'].append(parameter_to_dict(element))
     for task in actual_tasks:
         module['tasks'].append(task_to_dict(task))
-    # print(module['title'], module['guid'])
+
     template = env.get_template('module.html')
     html = template.render(module=module)
     filename = output_folder + "/modules/" + module['guid'] + ".html"
+    with open(filename, 'wt', encoding='utf-8') as file:
+        file.write(html)
+
+
+def create_project_page(p):
+    folderpath = '/'.join([f.text for f in p.findall('.//folder/name')])
+    paramroot = p.find('.//properties/parameters')
+    moduleroot = p.find('.//modules')
+    project = {
+        'title': (p.find('.//name')).text,
+        'guid': (p.find('.//guid')).text,
+        'enabled': (p.find('.//enabled')).text,
+        'description': (p.find('.//description')).text,
+        'version': (p.find('.//version')).text,
+        'versioncomment': (p.find('.//versioncomment')).text,
+        'folderpath': folderpath,
+        'parameters': [],
+        'modules': []
+    }
+
+    if len(paramroot) > 0:
+        for element in paramroot.getchildren():
+            project['parameters'].append(parameter_to_dict(element))
+    if len(moduleroot) > 0:
+        for module in moduleroot.getchildren():
+            project['modules'].append(projectmodule_to_dict(module))
+
+    template = env.get_template('project.html')
+    html = template.render(project=project)
+    filename = output_folder + "/projects/" + project['guid'] + ".html"
     with open(filename, 'wt', encoding='utf-8') as file:
         file.write(html)
 
@@ -283,10 +416,8 @@ def main():
                         metavar='BuildingBlock',
                         help='The Building Block XML File to process')
     args = parser.parse_args()
-    # ToDo Add argument handler for input file
-    # For now we grab cwd/Export.xml or busto
     buildingblock = args.file
-    bbprocess(buildingblock)
+    process_buildingblock(buildingblock)
 
 if __name__ == "__main__":
     # execute only if run as a script

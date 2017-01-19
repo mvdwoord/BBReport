@@ -1,9 +1,9 @@
 {# Template for PWRSHELL tasks #}
     <table>
-        <TR><TD class="label-PWRSHELL">Source</TD><TD>{{ pwrshell.source }}</TD></TR>
+        <tr><td class="label-PWRSHELL">Source</td><td>{{ pwrshell.source }}</td></tr>
         {% if pwrshell.source == "Resource File" %}
-            <TR><TD class="label-PWRSHELL">Resource Name</TD><TD>{{ pwrshell.resourcename }}</TD></TR>
-            <TR><TD class="label-PWRSHELL">Resource GUID</TD><TD>{{ pwrshell.resourceguid }}</TD></TR>
+            <tr><td class="label-PWRSHELL">Resource Name</td><td>{{ pwrshell.resourcename }}</td></tr>
+            <tr><td class="label-PWRSHELL">Resource GUID</td><td>{{ pwrshell.resourceguid }}</td></tr>
         {% endif %}
     </table>
     {% highlight 'powershell', lineno='table' %}{{ pwrshell.code }}{% endhighlight %}

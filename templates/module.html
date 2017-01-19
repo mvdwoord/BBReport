@@ -9,35 +9,35 @@
 <body>
 <div id="content">
     <table>
-        <TR><TD class="title-1" colspan="2">{{ module.title }}</TD></TR>
-        <TR><TD>GUID</TD>            <TD>{{ module.guid }}</TD></TR>
-        <TR><TD>Enabled</TD>         <TD>{{ module.enabled }}</TD></TR>
-        <TR><TD>Description</TD>     <TD>{{ module.description }}</TD></TR>
-        <TR><TD>Version</TD>         <TD>{{ module.verison }}</TD></TR>
-        <TR><TD>Version Comment</TD> <TD>{{ module.versioncomment }}</TD></TR>
-        <TR><TD>Folder Path</TD>     <TD>{{ module.folderpath }}</TD></TR>
+        <tr><td class="title-1" colspan="2">{{ module.title }}</td></tr>
+        <tr><td>GUID</td>            <td>{{ module.guid }}</td></tr>
+        <tr><td>Enabled</td>         <td>{{ module.enabled }}</td></tr>
+        <tr><td>Description</td>     <td>{{ module.description }}</td></tr>
+        <tr><td>Version</td>         <td>{{ module.version }}</td></tr>
+        <tr><td>Version Comment</td> <td>{{ module.versioncomment }}</td></tr>
+        <tr><td>Folder Path</td>     <td>{{ module.folderpath }}</td></tr>
     </table>
     {% if module.parameters|length > 0 %}
     <table>
-        <TR><TD class="title-2" colspan="4">Parameters</TD></TR>
-        <TR><TD class="column-header">Name</TD>
-            <TD class="column-header">Type</TD>
-            <TD class="column-header">Default Value</TD>
-            <TD class="column-header">Description</TD>
-        </TR>
+        <tr><td class="title-2" colspan="4">Parameters</td></tr>
+        <tr><td class="column-header">Name</td>
+            <td class="column-header">Type</td>
+            <td class="column-header">Default Value</td>
+            <td class="column-header">Description</td>
+        </tr>
         {% for parameter in module.parameters %}
-        <TR><TD>{{ parameter.name }}</TD>
-            <TD>{{ parameter.type }}</TD>
-            <TD>{{ parameter.value }}</TD>
-            <TD>{{ parameter.description }}</TD></TR>
+        <tr><td>{{ parameter.name }}</td>
+            <td>{{ parameter.type }}</td>
+            <td>{{ parameter.value }}</td>
+            <td>{{ parameter.description }}</td></tr>
         {% endfor %}
     </table>
     {% endif %}
     {% for task in module.tasks %}
     <table>
-        <TR><TD class="title-2" colspan="2">Task - {{ task.type }}</TD></TR>
-        <TR><TD class="label-{{ task.type }}">GUID</TD>    <TD>{{ task.guid }}</TD></TR>
-        <TR><TD class="label-{{ task.type }}">Enabled</TD> <TD>{{ task.enabled }}</TD></TR>
+        <tr><td class="title-2" colspan="2">Task - {{ task.displayname }}</td></tr>
+        <tr><td class="label-{{ task.type }}">GUID</td>    <td>{{ task.guid }}</td></tr>
+        <tr><td class="label-{{ task.type }}">Enabled</td> <td>{{ task.enabled }}</td></tr>
     </table>
     {{ task.settings|safe }}
     {% endfor %}

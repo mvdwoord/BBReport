@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Building Block Instant Report</title>
-    <link rel="stylesheet" type="text/css" href="bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="bbreport.css"/>
 </head>
 <body>
 <div id="content">
-<table>
-    <tr><td class="index-header">Modules</td></tr>
-    {% for module in index.modules %}
-    <tr><td class="index-listitem"><a href="modules/{{ module.guid }}.html">{{ module.name }}</a></td></tr>
-    {% endfor %}
-</table>
+    {% if index.projects %}
+    <table>
+        <tr>
+            <td class="index-header">Projects</td>
+        </tr>
+        {% for project in index.projects %}
+        <tr>
+            <td class="index-listitem"><a href="projects/{{ project.guid }}.html">{{ project.name }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <table>
+        <tr>
+            <td class="index-header">Modules</td>
+        </tr>
+        {% for module in index.modules %}
+        <tr>
+            <td class="index-listitem"><a href="modules/{{ module.guid }}.html">{{ module.name }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 </body>
 </html>

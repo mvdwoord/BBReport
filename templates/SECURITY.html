@@ -1,0 +1,25 @@
+{# Template for FILEOPERATIONS tasks #}
+    <table>
+        <tr><td class="label-SECURITY">Target</td>      <td class="cell-emphasize">{{ permission.filename }}</td></tr>
+    </table>
+    <table>
+        <tr><td colspan="2">Remove all existing permissions: {{ permission.replaceacl }}</td></tr>
+        <tr><td colspan="2">Replace permissions on all child objects: {{ permission.propagate }}</td></tr>
+    </table>
+    <table>
+        <tr><td class="column-header">Action</td>
+            <td class="column-header">User/Group</td>
+            <td class="column-header">Permission</td>
+        </tr>
+        {% for action in permission.permissions %}
+        <TR>
+            <td>{{ action.action }}</td>
+            <td>{{ action.account }}</td>
+            {% if action.action == '3' %}
+            <td>N/A</td>
+            {% else %}
+            <td>{{ action.right }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>

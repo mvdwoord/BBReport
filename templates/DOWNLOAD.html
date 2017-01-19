@@ -1,26 +1,26 @@
 {# Template for DOWNLOAD tasks #}
     <table>
-        <TR><TD class="label-DOWNLOAD">Enable logging</TD><TD>{{ download.ysnlog }}</TD></TR>
-        <TR><TD class="label-DOWNLOAD">Number of Resources</TD><TD>{{ download.resources|length }}</TD></TR>
-        <TR><TD class="label-DOWNLOAD">Specify destination folder</TD><TD>{{ download.ysndestination }}</TD></TR>
+        <tr><td class="label-DOWNLOAD">Enable logging</td><td>{{ download.ysnlog }}</td></tr>
+        <tr><td class="label-DOWNLOAD">Number of Resources</td><td>{{ download.resources|length }}</td></tr>
+        <tr><td class="label-DOWNLOAD">Specify destination folder</td><td>{{ download.ysndestination }}</td></tr>
         {% if download.ysndestination == "yes" %}
-            <TR><TD class="label-DOWNLOAD">Folder</TD><TD>{{ download.destination }}</TD></TR>
+            <tr><td class="label-DOWNLOAD">Folder</td><td>{{ download.destination }}</td></tr>
         {% endif %}
     </table>
     <table>
         {% for resource in download.resources %}
-        <TR><TD class="column-header">GUID</TD><TD class="column-header">{{ resource.guid }}</TD></TR>
-        <TR><TD>Version</TD><TD>{{ resource.version }}</TD></TR>
-        <TR><TD>Version Comment</TD><TD>{{ resource.versioncomment }}</TD></TR>
-        <TR><TD>Type</TD><TD>{{ resource.type }}</TD></TR>
+        <tr><td class="column-header">GUID</td><td class="column-header">{{ resource.guid }}</td></tr>
+        <tr><td>Version</td><td>{{ resource.version }}</td></tr>
+        <tr><td>Version Comment</td><td>{{ resource.versioncomment }}</td></tr>
+        <tr><td>Type</td><td>{{ resource.type }}</td></tr>
         {% if resource.type == "DATABASE" %}
-        <TR><TD>Filename</TD><TD class="cell-emphasize">{{ resource.file }}</TD></TR>
-        <TR><TD>Parse variables, parameters and functions in content</TD><TD>{{ resource.parsefilecontent }}</TD></TR>
-        <TR><TD>Skip parsing of environment variables</TD><TD>{{ resource.skipenvironmentvariables }}</TD></TR>
-        <TR><TD>Comment</TD><TD>{{ resource.comment }}</TD></TR>
-        <TR><TD>Enabled</TD><TD>{{ resource.enabled }}</TD></TR>
-        <TR><TD>CRC32</TD><TD>{{ resource.crc32 }}</TD></TR>
-        <TR><TD>Folder Path</TD><TD>{{ resource.folderpath }}</TD></TR>
+        <tr><td>Filename</td><td class="cell-emphasize">{{ resource.file }}</td></tr>
+        <tr><td>Parse variables, parameters and functions in content</td><td>{{ resource.parsefilecontent }}</td></tr>
+        <tr><td>Skip parsing of environment variables</td><td>{{ resource.skipenvironmentvariables }}</td></tr>
+        <tr><td>Comment</td><td>{{ resource.comment }}</td></tr>
+        <tr><td>Enabled</td><td>{{ resource.enabled }}</td></tr>
+        <tr><td>CRC32</td><td>{{ resource.crc32 }}</td></tr>
+        <tr><td>Folder Path</td><td>{{ resource.folderpath }}</td></tr>
         {% endif %}
         {% endfor %}
     </table>
