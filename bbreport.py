@@ -58,7 +58,7 @@ task_displayname = {
     'DOWNLOAD': "Download a resource",
     'SHUTDOWN': "Shutdown or Reboot",
     'REGISTRY': "Apply Registry Settings",
-    'FILEOPERATIONS': "PErform File Operations"
+    'FILEOPERATIONS': "Perform File Operations"
 }
 
 security_objecttype = {
@@ -338,6 +338,30 @@ def task_to_dict(t):
             permission['permissions'].append(permission_item)
 
         taskdict['settings'] = env.get_template('SECURITY.html').render(permission=permission)
+
+    elif tasktype == 'COMMAND':
+        commandline = t.find('.//commandline').text
+        # If the script is not referenced in the commandline it is ignored, so will we.
+        hasscripttab = '@[Script]' in commandline
+        command = {
+            'commandline': commandline,
+            'hasscripttab': hasscripttab,
+            'redirect': t.find('.//redirect').text,
+            'failonerroutput': t.find('.//failonerroutput').text,
+            'validateexitcode': t.find('.//validateexitcode').text,
+            'timeout': t.find('.//timeout').text,
+            'terminate': t.find('.//terminate').text,
+            'terminatetree': t.find('.//terminatetree').text,
+            'grablog': "-"
+        }
+        if hasscripttab:
+            command['script'] = t.find('.//script').text
+
+        grablog_element = t.find('.//grablogfile')
+        if grablog_element is not None:
+            command['grablog'] = grablog_element.text
+
+        taskdict['settings'] = env.get_template('COMMAND.html').render(command=command)
 
     # Finally we return the dictionary to the caller.
     return taskdict

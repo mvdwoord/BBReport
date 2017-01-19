@@ -61,6 +61,10 @@ td.label-SHUTDOWN {
     width: 400px;
 }
 
+td.label-COMMAND {
+    width: 300px;
+}
+
 td.code {
     padding-left: 10px;
 }

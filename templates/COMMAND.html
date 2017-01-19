@@ -1,0 +1,9 @@
+{# Template for COMMAND tasks #}
+    {% highlight 'winbatch', lineno='table' %}{{ command.commandline }}{% endhighlight %}
+    <table>
+        <tr><td class="label-COMMAND">Resource GUID: {{ command.usecmd }}</td></tr>
+        <tr><td>Grab log file:</td><td>{{ command.grablog }}</td></tr>
+    </table>
+    {% if command.hasscripttab %}
+    {% highlight 'winbatch', lineno='table' %}{{ command.script }}{% endhighlight %}
+    {% endif %}
