@@ -44,9 +44,6 @@ __maintainer__ = "Maarten van der Woord"
 __email__ = "maarten@vanderwoord.nl"
 __status__ = "Development"
 
-# ToDo parameterize output folder
-output_folder = "./output"
-
 # Some lookup dicts for RES magic numbers
 parameter_type = {
     '0': 'Text'
@@ -104,7 +101,7 @@ access_mask = {
 bbtree = ''
 
 
-def process_buildingblock(bb):
+def process_buildingblock(bb, output_folder):
     """Open Building Block file, parse as xml and dispatch the sections to their respective parser functions"""
     try:
         with open(bb) as buildingblock:
@@ -122,14 +119,20 @@ def process_buildingblock(bb):
             if len(moduleroot) > 0:
                 os.makedirs(output_folder + '/modules')
                 for module in moduleroot.getchildren():
-                    create_module_page(module)
+                    html, guid = create_module_page(module)
+                    filename = output_folder + "/modules/" + guid + ".html"
+                    with open(filename, 'wt', encoding='utf-8') as file:
+                        file.write(html)
 
-            # Next up is creating all module pages
+            # Next up is creating all project pages
             projectroot = bbtree.find("/buildingblock/projects")
             if len(projectroot) > 0:
                 os.makedirs(output_folder + '/projects')
                 for project in projectroot.getchildren():
-                    create_project_page(project)
+                    html, guid = create_project_page(project)
+                    filename = output_folder + "/projects/" + guid + ".html"
+                    with open(filename, 'wt', encoding='utf-8') as file:
+                        file.write(html)
 
             # Finally we create an index page to tie it all together
             index = {
@@ -392,9 +395,7 @@ def create_module_page(m):
 
     template = env.get_template('module.html')
     html = template.render(module=module)
-    filename = output_folder + "/modules/" + module['guid'] + ".html"
-    with open(filename, 'wt', encoding='utf-8') as file:
-        file.write(html)
+    return html, module['guid']
 
 
 def create_project_page(p):
@@ -422,9 +423,7 @@ def create_project_page(p):
 
     template = env.get_template('project.html')
     html = template.render(project=project)
-    filename = output_folder + "/projects/" + project['guid'] + ".html"
-    with open(filename, 'wt', encoding='utf-8') as file:
-        file.write(html)
+    return html, project['guid']
 
 
 def unreszlib(reszlib):
@@ -439,9 +438,15 @@ def main():
                         default='./Export.xml',
                         metavar='BuildingBlock',
                         help='The Building Block XML File to process')
+
+    parser.add_argument('-o', '--output',
+                        default='./output',
+                        metavar='folder',
+                        help='The folder will be deleted if it exists!')
     args = parser.parse_args()
     buildingblock = args.file
-    process_buildingblock(buildingblock)
+    output_folder = args.output
+    process_buildingblock(buildingblock, output_folder)
 
 if __name__ == "__main__":
     # execute only if run as a script
