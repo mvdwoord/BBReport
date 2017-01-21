@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ resource.name }}</title>
+    <link rel="stylesheet" type="text/css" href="../bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="../vs.css" />
+</head>
+<body>
+<div id="content">
+    <table>
+        <tr><td class="title-1" colspan="2">{{resource.name }}</td></tr>
+        <tr><td>GUID</td>            <td>{{ resource.guid }}</td></tr>
+        <tr><td>Type</td>            <td>{{ resource.displayname }}</td></tr>
+        <tr><td>Enabled</td>         <td>{{ resource.enabled }}</td></tr>
+        <tr><td>Comment</td>         <td>{{ resource.comment }}</td></tr>
+        <tr><td>Version</td>         <td>{{ resource.version }}</td></tr>
+        <tr><td>Version Comment</td> <td>{{ resource.versioncomment }}</td></tr>
+        <tr><td>Folder Path</td>     <td>{{ resource.folderpath }}</td></tr>
+    {% if resource.type == 'DATABASE' %}
+        <tr><td>CRC32</td>                      <td>{{ resource.crc32 }}</td></tr>
+        <tr><td>Parse File contents</td>        <td>{{ resource.parsefilecontent }}</td></tr>
+        <tr><td>Skip Environment Variables</td> <td>{{ resource.skipenvironmentvariables }}</td></tr>
+    {% endif %}
+    {% if resource.type == 'FILESHARE' %}
+        <tr><td>File location</td>              <td>{{ resource.path }}</td></tr>
+    {% endif %}
+    {% if resource.type == 'URLRESOURCE' %}
+        <tr><td>Download location</td>          <td>{{ resource.urlresource }}</td></tr>
+    {% endif %}
+    {% if resource.type == 'AMRESOURCEPACKAGE' %}
+        <tr><td>CRC32</td>                      <td>{{ resource.crc32 }}</td></tr>
+    {% endif %}
+    </table>
+</div>
+</body>
+</html>

@@ -1,9 +1,36 @@
 {# Template for COMMAND tasks #}
-    {% highlight 'winbatch', lineno='table' %}{{ command.commandline }}{% endhighlight %}
     <table>
-        <tr><td class="label-COMMAND">Resource GUID: {{ command.usecmd }}</td></tr>
+        <tr>
+            <td class="label-COMMAND", colspan="2">Command Line:</td>
+        </tr>
+        <tr>
+            <td colspan="2">{% highlight 'winbatch', lineno='table' %}{{ command.commandline }}{% endhighlight %}</td>
+        </tr>
+        <tr>
+            <td class="label-COMMAND">Execute command using the Windows command interpreter</td>
+            <td>{{ command.usecmd }}</td>
+        </tr>
+        <tr>
+            <td class="label-COMMAND">Redirect standard output and standard error to logfiles</td>
+            <td>{{ command.redirect }}</td>
+        </tr>
+        <tr>
+            <td class="label-COMMAND">Fail task if error log is generated</td>
+            <td>{{ command.failonerroutput }}</td>
+        </tr>
+        <tr>
+            <td class="label-COMMAND">Timeout command execution after:</td>
+            <td>{{ command.timeout }} minute(s)</td>
+        </tr>
+        {% if command.grablog %}
         <tr><td>Grab log file:</td><td>{{ command.grablog }}</td></tr>
+        {% endif %}
+        {% if command.hasscripttab %}
+        <tr>
+            <td class="label-COMMAND", colspan="2">Script tab:</td>
+        </tr>
+        <tr>
+            <td colspan="2"> {% highlight 'winbatch', lineno='table' %}{{ command.script }}{% endhighlight %}</td>
+        </tr>
+        {% endif %}
     </table>
-    {% if command.hasscripttab %}
-    {% highlight 'winbatch', lineno='table' %}{{ command.script }}{% endhighlight %}
-    {% endif %}

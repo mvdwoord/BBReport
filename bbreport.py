@@ -58,6 +58,13 @@ task_displayname = {
     'FILEOPERATIONS': "Perform File Operations"
 }
 
+resourcetype_displayname = {
+    'DATABASE': 'Stored in database',
+    'FILESHARE': "Located on Fileshare",
+    'URLRESOURCE': 'Located at URL',
+    'AMRESOURCEPACKAGE': 'RES ONE Automation Resource Package'
+}
+
 security_objecttype = {
     '1': "Set NTFS File/Folder Permissions",
     '2': "Set Registry Permissions",
@@ -114,6 +121,16 @@ def process_buildingblock(bb, output_folder):
             global bbtree
             bbtree = (etree.parse(buildingblock))
 
+            # Create a page for every resource
+            resourceroot = bbtree.find("/buildingblock/resources")
+            if len(resourceroot) > 0:
+                os.makedirs(output_folder + '/resources')
+                for resource in resourceroot.getchildren():
+                    html, guid = create_resource_page(resource)
+                    filename = output_folder + "/resources/" + guid + ".html"
+                    with open(filename, 'wt', encoding='utf-8') as file:
+                        file.write(html)
+
             # First item of business is creating all module pages
             moduleroot = bbtree.find("/buildingblock/modules")
             if len(moduleroot) > 0:
@@ -137,9 +154,23 @@ def process_buildingblock(bb, output_folder):
             # Finally we create an index page to tie it all together
             index = {
                 'filename': bb,
+                'resources': [],
                 'projects': [],
                 'modules': []
             }
+            for resource_element in bbtree.findall('/buildingblock/resources/resource'):
+                resourcetype = resource_element.find('.//properties/type').text
+                # This is one of those pesky inconsistencies in RESAM... #FML
+                if resourcetype == 'AMRESOURCEPACKAGE':
+                    name = resource_element.find('.//properties/name').text
+                else:
+                    name = resource_element.find('.//properties/file').text
+                project = {
+                    'name': name,
+                    'guid': resource_element.find('.//properties/guid').text
+                }
+                index['resources'].append(project)
+
             for project_element in bbtree.findall('/buildingblock/projects/project'):
                 project = {
                     'name': project_element.find('.//properties/name').text,
@@ -155,6 +186,7 @@ def process_buildingblock(bb, output_folder):
                 index['modules'].append(module)
 
             # Sort them alphabetically
+            index['resources'] = sorted(index['resources'], key=lambda k: k['name'])
             index['projects'] = sorted(index['projects'], key=lambda k: k['name'])
             index['modules'] = sorted(index['modules'], key=lambda k: k['name'])
 
@@ -271,30 +303,16 @@ def task_to_dict(t):
             xpath = '//resource[properties/guid="' + resourceguid + '"]'
             resource_element = bbtree.xpath(xpath)[0]
             guid = resource_element.find('.//properties/guid').text
-            version = resource_element.find('.//properties/version').text
-            versioncomment = resource_element.find('.//properties/versioncomment').text
             resourcetype = resource_element.find('.//properties/type').text
+            if resourcetype == 'AMRESOURCEPACKAGE':
+                name = resource_element.find('.//properties/name').text
+            else:
+                name = resource_element.find('.//properties/file').text
             resource = {
                 'guid': guid,
-                'version': version,
-                'versioncomment': versioncomment,
+                'name': name,
                 'type': resourcetype
             }
-            # Here we add the resource type specific attributes
-            if resourcetype == 'DATABASE':
-                resource['file'] = resource_element.find('.//properties/file').text
-                resource['parsefilecontent'] = resource_element.find('.//properties/parsefilecontent').text
-                resource['skipenvironmentvariables'] = resource_element.find('.//properties/skipenvironmentvariables').text
-                resource['comment'] = resource_element.find('.//properties/comment').text
-                resource['enabled'] = resource_element.find('.//properties/enabled').text
-                resource['crc32'] = resource_element.find('.//properties/crc32').text
-                resource['folderpath'] = '/'.join([f.text for f in resource_element.findall('.//folder/name')])
-            elif resourcetype == 'FILESHARE':
-                resource['file'] = resource_element.find('.//properties/file').text
-            elif resourcetype == 'AMRESOURCEPACKAGE':
-                resource['name'] = resource_element.find('.//properties/name').text
-            elif resourcetype == 'URLRESOURCE':
-                resource['file'] = resource_element.find('.//properties/file').text
 
             download['resources'].append(resource)
 
@@ -345,29 +363,61 @@ def task_to_dict(t):
     elif tasktype == 'COMMAND':
         commandline = t.find('.//commandline').text
         # If the script is not referenced in the commandline it is ignored, so will we.
-        hasscripttab = '@[Script]' in commandline
+        hasscripttab = '@[SCRIPT]' in commandline
         command = {
             'commandline': commandline,
             'hasscripttab': hasscripttab,
+            'usecmd': t.find('.//usecmd').text,
             'redirect': t.find('.//redirect').text,
             'failonerroutput': t.find('.//failonerroutput').text,
             'validateexitcode': t.find('.//validateexitcode').text,
             'timeout': t.find('.//timeout').text,
             'terminate': t.find('.//terminate').text,
             'terminatetree': t.find('.//terminatetree').text,
-            'grablog': "-"
+            'grablog': t.find('.//grablogfile').text,
+            'script': t.find('.//script').text
         }
-        if hasscripttab:
-            command['script'] = t.find('.//script').text
-
-        grablog_element = t.find('.//grablogfile')
-        if grablog_element is not None:
-            command['grablog'] = grablog_element.text
 
         taskdict['settings'] = env.get_template('COMMAND.html').render(command=command)
 
     # Finally we return the dictionary to the caller.
     return taskdict
+
+
+def create_resource_page(r):
+    """Creates a html from jinja template and a module element"""
+    guid = r.find('.//properties/guid').text
+    resourcetype = r.find('.//properties/type').text
+    folderpath = '/'.join([f.text for f in r.findall('.//folder/name')])
+    resource = {
+        'guid': guid,
+        'displayname': resourcetype_displayname[resourcetype],
+        'version': r.find('.//properties/version').text,
+        'versioncomment': r.find('.//properties/versioncomment').text,
+        'type': resourcetype,
+        'folderpath': folderpath,
+        'enabled': r.find('.//properties/enabled').text,
+        'comment': r.find('.//properties/comment').text
+    }
+    # Here we add the resource type specific attributes
+    if resourcetype == 'DATABASE':
+        resource['name'] = r.find('.//properties/file').text
+        resource['parsefilecontent'] = r.find('.//properties/parsefilecontent').text
+        resource['skipenvironmentvariables'] = r.find('.//properties/skipenvironmentvariables').text
+        resource['crc32'] = r.find('.//properties/crc32').text
+    elif resourcetype == 'FILESHARE':
+        resource['name'] = r.find('.//properties/file').text
+        resource['path'] = r.find('.//properties/path').text
+    elif resourcetype == 'AMRESOURCEPACKAGE':
+        resource['name'] = r.find('.//properties/name').text
+        resource['crc32'] = r.find('.//properties/crc32').text
+    elif resourcetype == 'URLRESOURCE':
+        resource['name'] = r.find('.//properties/file').text
+        resource['urlresource'] = r.find('.//properties/urlresource').text
+
+    template = env.get_template('resource.html')
+    html = template.render(resource=resource)
+    return html, resource['guid']
 
 
 def create_module_page(m):
@@ -390,6 +440,7 @@ def create_module_page(m):
     if len(paramroot) > 0:
         for element in paramroot.getchildren():
             module['parameters'].append(parameter_to_dict(element))
+        module['parameters'] = sorted(module['parameters'], key=lambda k: k['name'])
     for task in actual_tasks:
         module['tasks'].append(task_to_dict(task))
 
@@ -417,6 +468,7 @@ def create_project_page(p):
     if len(paramroot) > 0:
         for element in paramroot.getchildren():
             project['parameters'].append(parameter_to_dict(element))
+        project['parameters'] = sorted(project['parameters'], key=lambda k: k['name'])
     if len(moduleroot) > 0:
         for module in moduleroot.getchildren():
             project['modules'].append(projectmodule_to_dict(module))

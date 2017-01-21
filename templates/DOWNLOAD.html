@@ -8,19 +8,16 @@
         {% endif %}
     </table>
     <table>
+        <tr>
+            <td class="column-header">Name</td>
+            <td class="column-header">GUID</td>
+            <td class="column-header">Type</td>
+        </tr>
         {% for resource in download.resources %}
-        <tr><td class="column-header">GUID (Resource)</td><td class="column-header">{{ resource.guid }}</td></tr>
-        <tr><td>Version</td><td>{{ resource.version }}</td></tr>
-        <tr><td>Version Comment</td><td>{{ resource.versioncomment }}</td></tr>
-        <tr><td>Type</td><td>{{ resource.type }}</td></tr>
-        {% if resource.type == "DATABASE" %}
-        <tr><td>Filename</td><td class="cell-emphasize">{{ resource.file }}</td></tr>
-        <tr><td>Comment</td><td>{{ resource.comment }}</td></tr>
-        <tr><td>Enabled</td><td>{{ resource.enabled }}</td></tr>
-        <tr><td>CRC32</td><td>{{ resource.crc32 }}</td></tr>
-        <tr><td>Folder Path</td><td>{{ resource.folderpath }}</td></tr>
-        <tr><td colspan="2">Parse variables, parameters and functions in content: {{ resource.parsefilecontent }}</td></tr>
-        <tr><td colspan="2">Skip parsing of environment variables: {{ resource.skipenvironmentvariables }}</td></tr>
-        {% endif %}
+         <tr>
+             <td><a href="../resources/{{ resource.guid }}.html">{{ resource.name }}</a></td>
+            <td>{{ resource.guid }}</td>
+            <td>{{ resource.type }}</td>
+        </tr>
         {% endfor %}
     </table>

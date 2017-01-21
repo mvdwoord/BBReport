@@ -19,6 +19,19 @@
         {% endfor %}
     </table>
     {% endif %}
+    {% if index.resources %}
+    <table>
+        <tr>
+            <td class="index-header">Resources</td>
+        </tr>
+        {% for resource in index.resources %}
+        <tr>
+            <td class="index-listitem"><a href="resources/{{ resource.guid }}.html">{{resource.name }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    {% if index.modules %}
     <table>
         <tr>
             <td class="index-header">Modules</td>
@@ -29,6 +42,7 @@
         </tr>
         {% endfor %}
     </table>
+    {% endif %}
 </div>
 </body>
 </html>
