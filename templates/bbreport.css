@@ -88,6 +88,10 @@ th {
     text-align: left;
 }
 
+th.icon {
+    width: 14px;
+}
+
 th.enabled {
     width: 80px;
 }

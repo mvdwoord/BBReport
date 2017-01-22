@@ -45,8 +45,19 @@ __email__ = "maarten@vanderwoord.nl"
 __status__ = "Development"
 
 # Some lookup dicts for RES magic numbers
+linktype_display = {
+    '0': "Set",
+    '1': "Both",
+    '2': "Get"
+}
+
 parameter_type = {
-    '0': 'Text'
+    '0': 'Text',
+    '1': 'List',
+    '2': 'Credential',
+    '3': 'Muti Select List',
+    '4': 'Multiline',
+    '5': 'Password'
 }
 
 task_displayname = {
@@ -217,12 +228,55 @@ def parameter_to_dict(p):
     value = ""
     if value_element is not None:
         value = value_element.text
+
+    # Input tab
+    on_import = p.find('.//inputtiming/importbb').text == 'yes'
+    import_prev = p.xpath('.//inputtiming/importbb/@showprev')[0] == 'yes'
+    on_schedule = p.xpath('.//inputtiming/schedulejob')[0] == 'yes'
+    sched_prev = p.xpath('.//inputtiming/schedulejob/@showprev')[0] == 'yes'
+    # Cannot be sure these exist, but assume False if missing
+    try:
+        sched_erase = p.xpath('.//inputtiming/schedulejob/@eraseprev')[0] == 'yes'
+    except IndexError:
+        sched_erase = False
+
     parameterdict = {
-        'name': (p.find('.//name')).text,
+        'name': p.find('.//name').text,
         'type': parameter_type.get(p.find('.//type').text, "Unknown"),
         'value': value,
-        'description': (p.find('.//description')).text
+        'description': (p.find('.//description')).text,
+        'input': {
+            'on_import': on_import,
+            'import_prev': import_prev,
+            'on_schedule': on_schedule,
+            'sched_prev': sched_prev,
+            'sched_erase': sched_erase
+        },
+        'links': []
     }
+    if len(p.find('.//selection')) > 0:
+        for module in p.findall('.//selection/module'):
+            # Grab the type and guid to construct a target
+            targettype = module.xpath('.//@type')[0]
+            targetguid = module.xpath('.//@guid')[0]
+            xpath = '//' + targettype + '/properties[guid/text()="' + targetguid + '"]/name'
+            targetname = bbtree.xpath(xpath)[0].text
+
+            # Auto Linked Parameters do not have a link type in the xml
+            # Default is to Set Initial Value
+            try:
+                linktype = module.xpath('.//@linktype')[0]
+            except IndexError:
+                linktype = '0'
+            link = {
+                'targettype': targettype,
+                'targetguid': targetguid,
+                'linktype': linktype_display.get(linktype, 'Error'),
+                'targetname': targetname,
+                'name': module.find('.//param').text
+            }
+            parameterdict['links'].append(link)
+
     return parameterdict
 
 
