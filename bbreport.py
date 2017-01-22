@@ -55,7 +55,9 @@ task_displayname = {
     'DOWNLOAD': "Download a resource",
     'SHUTDOWN': "Shutdown or Reboot",
     'REGISTRY': "Apply Registry Settings",
-    'FILEOPERATIONS': "Perform File Operations"
+    'FILEOPERATIONS': "Perform File Operations",
+    'LINUX_COMMAND': "Execute a Command (UNIX/Linux)",
+    'LINUX_DOWNLOAD': "Download a resource (UNIX/Linux)"
 }
 
 resourcetype_displayname = {
@@ -76,6 +78,14 @@ permission_action = {
     '1': "Allow",
     '2': "Deny",
     '3': "Delete"
+}
+
+fileext_lexer = {
+    'cmd': 'winbatch',
+    'sh': 'bash',
+    'ps1': 'powershell',
+    'psm1': 'powershell',
+    'pl': 'perl'
 }
 
 """ Access masks are a special beast.
@@ -245,7 +255,7 @@ def task_to_dict(t):
     # Tasks have type specific properties which need to be dealt with individually
     # We'll use the 'settings' of the taskdict to store a rendered partial table
     # based of the type's template. To be included in the main module template.
-    if tasktype == "PWRSHELL":
+    if tasktype == 'PWRSHELL':
         # usescript indicates if the script tab is used. If not, the source code
         # needs to come from a resource. Value is always yes or no.
         usescript = t.find('.//settings/usescript').text
@@ -264,7 +274,7 @@ def task_to_dict(t):
             }
         taskdict['settings'] = env.get_template('PWRSHELL.html').render(pwrshell=pwrshell)
 
-    elif tasktype == "SHUTDOWN":
+    elif tasktype == 'SHUTDOWN':
         message = t.find('.//settings/message').text
         reboot = t.find('.//settings/reboot').text
         force = t.find('.//settings/force').text
@@ -288,7 +298,7 @@ def task_to_dict(t):
 
         taskdict['settings'] = env.get_template('SHUTDOWN.html').render(shutdown=shutdown)
 
-    elif tasktype == "DOWNLOAD":
+    elif tasktype == 'DOWNLOAD' or tasktype == 'LINUX_DOWNLOAD':
         ysnlog = t.find('.//settings/ysnlog').text
         ysndestination = t.find('.//settings/ysndestination').text
         download = {
@@ -365,6 +375,8 @@ def task_to_dict(t):
         commandline = t.find('.//commandline').text
         # If the script is not referenced in the commandline it is ignored, so will we.
         hasscripttab = '@[SCRIPT]' in commandline.upper()
+        scriptext = t.find('.//scriptext').text
+        lexer = fileext_lexer.get(scriptext, 'none')
         command = {
             'commandline': commandline,
             'hasscripttab': hasscripttab,
@@ -376,10 +388,32 @@ def task_to_dict(t):
             'terminate': t.find('.//terminate').text,
             'terminatetree': t.find('.//terminatetree').text,
             'grablog': t.find('.//grablogfile').text,
-            'script': t.find('.//script').text
+            'script': t.find('.//script').text,
+            'lexer': lexer
         }
 
         taskdict['settings'] = env.get_template('COMMAND.html').render(command=command)
+
+    elif tasktype == 'LINUX_COMMAND':
+        commandline = t.find('.//commandline').text
+        # If the script is not referenced in the commandline it is ignored, so will we.
+        hasscripttab = '@[SCRIPT]' in commandline.upper()
+        scriptext = t.find('.//scriptext').text
+        lexer = fileext_lexer.get(scriptext, 'none')
+        command = {
+            'commandline': commandline,
+            'hasscripttab': hasscripttab,
+            'usecmd': t.find('.//usecmd').text,
+            'redirect': t.find('.//redirect').text,
+            'validateexitcode': t.find('.//validateexitcode').text,
+            'timeout': t.find('.//timeout').text,
+            'terminate': t.find('.//terminate').text,
+            'grablog': t.find('.//grablogfile').text,
+            'script': t.find('.//script').text,
+            'lexer': lexer
+        }
+
+        taskdict['settings'] = env.get_template('LINUX_COMMAND.html').render(command=command)
 
     # Finally we return the dictionary to the caller.
     return taskdict
