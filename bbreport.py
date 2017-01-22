@@ -118,6 +118,7 @@ def process_buildingblock(bb, output_folder):
             os.makedirs(output_folder)
             shutil.copyfile('./templates/bbreport.css', './output/bbreport.css')
             shutil.copyfile('./templates/vs.css', './output/vs.css')
+            shutil.copytree('./img/', './output/img/')
             global bbtree
             bbtree = (etree.parse(buildingblock))
 
@@ -363,7 +364,7 @@ def task_to_dict(t):
     elif tasktype == 'COMMAND':
         commandline = t.find('.//commandline').text
         # If the script is not referenced in the commandline it is ignored, so will we.
-        hasscripttab = '@[SCRIPT]' in commandline
+        hasscripttab = '@[SCRIPT]' in commandline.upper()
         command = {
             'commandline': commandline,
             'hasscripttab': hasscripttab,
@@ -488,12 +489,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file',
                         default='./Export.xml',
-                        metavar='BuildingBlock',
+                        metavar='<BuildingBlock>',
                         help='The Building Block XML File to process')
 
     parser.add_argument('-o', '--output',
                         default='./output',
-                        metavar='folder',
+                        metavar='<folder>,',
                         help='The folder will be deleted if it exists!')
     args = parser.parse_args()
     buildingblock = args.file

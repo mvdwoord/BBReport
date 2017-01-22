@@ -34,12 +34,17 @@
     </table>
     {% endif %}
     {% for task in module.tasks %}
-    <table>
-        <tr><td class="title-2" colspan="2">Task - {{ task.displayname }}</td></tr>
-        <tr><td class="label-{{ task.type }}">GUID</td>    <td>{{ task.guid }}</td></tr>
-        <tr><td class="label-{{ task.type }}">Enabled</td> <td>{{ task.enabled }}</td></tr>
-    </table>
-    {{ task.settings|safe }}
+    <div class="task-container">
+        <div class="task-table">
+        <table>
+            <tr><td class="title-2" colspan="2">Task - {{ task.displayname }}<span class="guid">{{ task.guid }}</span></td></tr>
+        </table>
+        {{ task.settings|safe }}
+        </div>
+        {% if task.enabled == 'no' %}
+        <div class="overlay"><div class="disabled">DISABLED</div></div>
+        {% endif %}
+    </div>
     {% endfor %}
 </div>
 </body>

@@ -9,15 +9,15 @@
     </table>
     <table>
         <tr>
-            <td class="column-header">Name</td>
-            <td class="column-header">GUID</td>
-            <td class="column-header">Type</td>
+            <th>Name</th>
+            <th class="resourcetype">Type</th>
+            <th class="guid">GUID</th>
         </tr>
         {% for resource in download.resources %}
-         <tr>
+        <tr>
              <td><a href="../resources/{{ resource.guid }}.html">{{ resource.name }}</a></td>
-            <td>{{ resource.guid }}</td>
-            <td>{{ resource.type }}</td>
+             <td class="resourcetype">{{ resource.type }}</td>
+             <td class="guid">{{ resource.guid }}</td>
         </tr>
         {% endfor %}
     </table>

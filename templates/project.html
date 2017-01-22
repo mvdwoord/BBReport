@@ -36,16 +36,24 @@
 
     <table>
         <tr><td class="title-2" colspan="3">Modules</td></tr>
-        <tr><td class="column-header">Name</td>
-            <td class="column-header">Enabled</td>
-            <td class="column-header">GUID</td>
+        <tr><th class="column-header">Name</th>
+            <th class="enabled">Enabled</th>
+            <th class="guid">GUID</th>
         </tr>
         {% for module in project.modules %}
+        {% if module.enabled == 'yes' %}
         <tr>
             <td><a href="../modules/{{ module.guid }}.html">{{ module.name }}</a></td>
-            <td>{{ module.enabled }}</td>
-            <td>{{ module.guid }}</td>
+            <td class="enabled">{{ module.enabled }}</td>
+            <td class="guid">{{ module.guid }}</td>
         </tr>
+        {% else %}
+        <tr>
+            <td class="disabled"><a href="../modules/{{ module.guid }}.html">{{ module.name }}</a></td>
+            <td class="disabled enabled">{{ module.enabled }}</td>
+            <td class="disabled enabled guid">{{ module.guid }}</td>
+        </tr>
+        {% endif %}
         {% endfor %}
     </table>
 
