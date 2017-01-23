@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ project.title }}</title>
-    <link rel="stylesheet" type="text/css" href="../bbreport.css" />
-    <link rel="stylesheet" type="text/css" href="../vs.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="../css/vs.css" />
+    <script src="../js/bbreport.js"></script>
 </head>
 <body>
 {% import 'macros.html' as macros with context %}
@@ -20,19 +21,35 @@
     </table>
     {% if project.parameters|length > 0 %}
     <table>
-        <tr><td class="title-2" colspan="4">Parameters</td><td class="title-2" colspan="5">Input</td> </tr>
-        <tr><th>Name</th>
+        <tr><td class="title-2" colspan="5">Parameters</td><td class="title-2" colspan="5">Input</td> </tr>
+        <tr><th class="param-name">Name</th>
+            <th class="icon">&nbsp;</th>
             <th>Type</th>
             <th>Default Value</th>
             <th>Description</th>
-            <th class="icon"><img src="../img/iconmonstr-brick-6-12.png" /></th>
-            <th class="icon"><img src="../img/iconmonstr-eye-6-12.png" /></th>
-            <th class="icon"><img src="../img/iconmonstr-time-9-12.png" /></th>
-            <th class="icon"><img src="../img/iconmonstr-eye-6-12.png" /></th>
-            <th class="icon"><img src="../img/iconmonstr-recycling-1-12.png" /></th>
+            <th class="icon"><img src="../img/iconmonstr-brick-6-12.png"
+                                  title="When importing Building Block"/></th>
+            <th class="icon"><img src="../img/iconmonstr-eye-6-12.png"
+                                  title="Show previous value"/></th>
+            <th class="icon"><img src="../img/iconmonstr-time-9-12.png"
+                                  title="When scheduling Job"/></th>
+            <th class="icon"><img src="../img/iconmonstr-eye-6-12.png"
+                                  title="Show previous value"/></th>
+            <th class="icon"><img src="../img/iconmonstr-recycling-1-12.png"
+                                  title="Erase previous value when rescheduling"/></th>
         </tr>
         {% for parameter in project.parameters %}
         <tr><td>{{ parameter.name }}</td>
+            <td>
+                {% if parameter.links|length > 0 %}
+                <img src="../img/iconmonstr-link-1-12.png"
+                     id="toggle-{{ parameter.name }}-links"
+                     onclick="toggle_display('{{ parameter.name }}-links', 'toggle-{{ parameter.name }}-links', false)"
+                     />
+                {% else %}
+                &nbsp;
+                {% endif %}
+            </td>
             <td>{{ parameter.type }}</td>
             <td>{{ parameter.value }}</td>
             <td>{{ parameter.description }}</td>
@@ -43,23 +60,24 @@
             <td>{{ macros.column_checkbox(parameter.input.sched_erase) }}</td>
         </tr>
         {% if parameter.links|length > 0 %}
-        <tr>
-            <td>&nbsp;</td>
-            <td colspan="8">
+        <tr id="{{ parameter.name }}-links"
+            class="parameter-links-section">
+            <td colspan="10">
                 <table>
-                    <tr>
-                        <th>LinkAction</th>
-                        <th>Target</th>
-                        <th>Parameter</th>
-                    </tr>
                 {% for link in parameter.links %}
-                    <tr>
-                        <td>{{ link.linktype }}</td>
-                        <td><a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a></td>
-                        <td>{{ link.name }}</td>
+                    <tr class="parameter-link-item">
+                        <td>
+                    {% if link.linktype =='Set' %}
+                        Set initial value for {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
+                    {% elif link.linktype =='Get' %}
+                        Get final value from {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
+                    {% elif link.linktype =='Both' %}
+                        Set, then Get from {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
+                    {% endif %}
+                    </td>
                     </tr>
                 {% endfor %}
-                </table>
+                    </table>
             </td>
         </tr>
         {% endif  %}

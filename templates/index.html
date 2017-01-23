@@ -3,45 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Building Block Instant Report</title>
-    <link rel="stylesheet" type="text/css" href="bbreport.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bbreport.css"/>
+    <script src="../js/bbreport.js"></script>
 </head>
 <body>
 <div id="content">
     {% if index.projects %}
-    <table>
-        <tr>
-            <td class="index-header">Projects</td>
-        </tr>
-        {% for project in index.projects %}
-        <tr>
-            <td class="index-listitem"><a href="projects/{{ project.guid }}.html">{{ project.name }}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="section">
+        <div class="section-head">
+                <img class="toggle"
+                     src="../img/iconmonstr-arrow-up-32-32.png"
+                     id="index-projects-toggle"
+                     onclick="toggle_display('index-projects', 'index-projects-toggle')" />
+            Projects
+        </div>
+        <div class="section-body" id="index-projects">
+            {% for project in index.projects %}
+            <div class="section-item">
+                <a href="projects/{{ project.guid }}.html">{{ project.name }} </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
     {% if index.resources %}
-    <table>
-        <tr>
-            <td class="index-header">Resources</td>
-        </tr>
-        {% for resource in index.resources %}
-        <tr>
-            <td class="index-listitem"><a href="resources/{{ resource.guid }}.html">{{resource.name }}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="section">
+        <div class="section-head">
+                <img class="toggle"
+                     src="../img/iconmonstr-arrow-up-32-32.png"
+                     id="index-resources-toggle"
+                     onclick="toggle_display('index-resources', 'index-resources-toggle')" />
+            Resources
+        </div>
+        <div class="section-body" id="index-resources">
+            {% for resource in index.resources %}
+            <div class="section-item">
+                <a href="resources/{{ resource.guid }}.html">{{ resource.name }} </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
     {% if index.modules %}
-    <table>
-        <tr>
-            <td class="index-header">Modules</td>
-        </tr>
-        {% for module in index.modules %}
-        <tr>
-            <td class="index-listitem"><a href="modules/{{ module.guid }}.html">{{ module.name }}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="section">
+        <div class="section-head">
+                <img class="toggle"
+                     src="../img/iconmonstr-arrow-up-32-32.png"
+                     id="index-modules-toggle"
+                     onclick="toggle_display('index-modules', 'index-modules-toggle')" />
+            Modules
+        </div>
+        <div class="section-body" id="index-modules">
+            {% for module in index.modules %}
+            <div class="section-item">
+                <a href="modules/{{ module.guid }}.html">{{ module.name }} </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
 </div>
 </body>

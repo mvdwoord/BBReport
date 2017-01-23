@@ -19,6 +19,33 @@ table {
     width: 100%;
 }
 
+.section-head {
+    background-color: #6B89C0;
+    font-weight: bold;
+    font-size: 28px;
+    color: white;
+    text-align: center;
+    position: relative;
+    height: 36px;
+}
+
+.section-head img.toggle {
+    position: absolute;
+    left: 10px;
+    top: 2px;
+}
+
+.parameter-links-section {
+    display: none;
+}
+
+.section-item {
+    padding-top: 2px;
+    padding-left: 50px;
+    padding-bottom: 2px;
+
+}
+
 .highlighttable {
     background-color: whitesmoke;
     border: 1px solid black;
@@ -90,6 +117,10 @@ th {
 
 th.icon {
     width: 14px;
+}
+
+th.param-name {
+    width: 150px;
 }
 
 th.enabled {

@@ -137,9 +137,9 @@ def process_buildingblock(bb, output_folder):
             # clear output directory
             shutil.rmtree(output_folder)
             os.makedirs(output_folder)
-            shutil.copyfile('./templates/bbreport.css', './output/bbreport.css')
-            shutil.copyfile('./templates/vs.css', './output/vs.css')
+            shutil.copytree('./css/', './output/css/')
             shutil.copytree('./img/', './output/img/')
+            shutil.copytree('./js/', './output/js/')
             global bbtree
             bbtree = (etree.parse(buildingblock))
 
