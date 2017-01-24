@@ -11,6 +11,8 @@ Export.xml
 output/
 reference/
 *.zip
+*.xml
+*.xbb
 
 # C extensions
 *.so
