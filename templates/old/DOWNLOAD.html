@@ -1,0 +1,23 @@
+{# Template for DOWNLOAD tasks #}
+    <table>
+        <tr><td class="label-DOWNLOAD">Enable logging</td><td>{{ download.ysnlog }}</td></tr>
+        <tr><td class="label-DOWNLOAD">Number of Resources</td><td>{{ download.resources|length }}</td></tr>
+        <tr><td class="label-DOWNLOAD">Specify destination folder</td><td>{{ download.ysndestination }}</td></tr>
+        {% if download.ysndestination == "yes" %}
+            <tr><td class="label-DOWNLOAD">Folder</td><td>{{ download.destination }}</td></tr>
+        {% endif %}
+    </table>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th class="resourcetype">Type</th>
+            <th class="guid">GUID</th>
+        </tr>
+        {% for resource in download.resources %}
+        <tr>
+             <td><a href="../resources/{{ resource.guid }}.html">{{ resource.name }}</a></td>
+             <td class="resourcetype">{{ resource.type }}</td>
+             <td class="guid">{{ resource.guid }}</td>
+        </tr>
+        {% endfor %}
+    </table>

@@ -1,0 +1,29 @@
+{# Template for LINUX_COMMAND tasks #}
+{% import 'macros.html' as macros with context%}
+    {% highlight 'bash', lineno='table' %}{{ command.commandline }}{% endhighlight %}
+    <table>
+        <tr>
+            {% if command.usecmd == 'yes' %}
+            <td>{{ macros.checked() }}Execute command using /bin/sh</td>
+            {% else %}
+            <td>{{ macros.unchecked() }}Execute command using /bin/sh</td>
+            {% endif %}
+        </tr>
+        <tr>
+            {% if command.redirect == 'yes' %}
+            <td> {{ macros.checked(indent='1') }}Redirect standard output and standard error to logfiles</td>
+            {% else %}
+            <td> {{ macros.unchecked(indent='1') }}Redirect standard output and standard error to logfiles</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Timeout command execution after: {{ command.timeout }} minute(s)</td>
+        </tr>
+        {% if command.grablog %}
+        <tr><td>Grab log file: {{ command.grablog }}</td></tr>
+        {% endif %}
+    </table>
+    {% if command.hasscripttab %}
+    Script tab:
+    {% highlight 'bash', lineno='table' %}{{ command.script }}{% endhighlight %}
+    {% endif %}

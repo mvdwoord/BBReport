@@ -299,11 +299,13 @@ def task_to_dict(t):
     """Returns a dictionary from a task xml element"""
     # Determine type and gather common info
     tasktype = t.find('.//properties/type').text
+    guid = t.find('.//properties/guid').text
     displayname = task_displayname.get(tasktype, "Unknown (" + tasktype + ")")
     taskdict = {
         'type': tasktype,
         'displayname': displayname,
-        'guid': t.find('.//properties/guid').text,
+        'guid': guid,
+        'cssid': guid[-13:-1],
         'enabled': t.find('.//properties/enabled').text
     }
     # Tasks have type specific properties which need to be dealt with individually

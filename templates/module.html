@@ -1,52 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ module.title }}</title>
-    <link rel="stylesheet" type="text/css" href="../css/bbreport.css" />
-    <link rel="stylesheet" type="text/css" href="../css/vs.css" />
-    <script src="../js/bbreport.js"></script>
-</head>
-<body>
-<div id="content">
-    <table>
-        <tr><td class="title-1" colspan="2">{{ module.title }}</td></tr>
-        <tr><td>GUID</td>            <td>{{ module.guid }}</td></tr>
-        <tr><td>Enabled</td>         <td>{{ module.enabled }}</td></tr>
-        <tr><td>Description</td>     <td>{{ module.description }}</td></tr>
-        <tr><td>Version</td>         <td>{{ module.version }}</td></tr>
-        <tr><td>Version Comment</td> <td>{{ module.versioncomment }}</td></tr>
-        <tr><td>Folder Path</td>     <td>{{ module.folderpath }}</td></tr>
-    </table>
-    {% if module.parameters|length > 0 %}
-    <table>
-        <tr><td class="title-2" colspan="4">Parameters</td></tr>
-        <tr><td class="column-header">Name</td>
-            <td class="column-header">Type</td>
-            <td class="column-header">Default Value</td>
-            <td class="column-header">Description</td>
-        </tr>
-        {% for parameter in module.parameters %}
-        <tr><td>{{ parameter.name }}</td>
-            <td>{{ parameter.type }}</td>
-            <td>{{ parameter.value }}</td>
-            <td>{{ parameter.description }}</td></tr>
-        {% endfor %}
-    </table>
-    {% endif %}
-    {% for task in module.tasks %}
-    <div class="task-container">
-        <div class="task-table">
-        <table>
-            <tr><td class="title-2" colspan="2">Task - {{ task.displayname }}<span class="guid">{{ task.guid }}</span></td></tr>
-        </table>
-        {{ task.settings|safe }}
+{% include 'header.html' %}
+<div class="banner">{{ module.title }}</div>
+<div class="section" id="module-properties">
+    <div class="table">
+        <div class="table-row-group">
+            <div class="table-row">
+                <div class="table-cell">GUID</div>
+                <div>{{ module.guid }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Enabled</div>
+                <div>{{ module.enabled }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Description</div>
+                <div>{{ module.description }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Version</div>
+                <div>{{ module.version }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Version Comment</div>
+                <div>{{ module.versioncomment }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Folder Path</div>
+                <div>{{ module.folderpath }}</div>
+            </div>
         </div>
-        {% if task.enabled == 'no' %}
-        <div class="overlay"><div class="disabled">DISABLED</div></div>
-        {% endif %}
     </div>
-    {% endfor %}
 </div>
-</body>
-</html>
+
+{% if module.parameters|length > 0 %}
+<div class="section" id="module-parameters">
+    <div class="table">
+        <div class="table-caption">
+            <img id="parameters-toggle"
+                 src="../img/iconmonstr-tag-4-24.png"
+                 onclick="toggle_display('parameters-group', 'table-row-group')"/>Parameters
+        </div>
+        <div class="table-row-group" id="parameters-group">
+            <div class="table-row">
+                <div class="table-head">Name</div>
+                <div class="table-head">Type</div>
+                <div class="table-head">Default Value</div>
+                <div class="table-head">Description</div>
+            </div>
+            {% for parameter in module.parameters %}
+            <div class="table-row">
+                <div class="table-cell">{{ parameter.name }}</div>
+                <div class="table-cell">{{ parameter.type }}</div>
+                <div class="table-cell">{{ parameter.value }}</div>
+                <div class="table-cell">{{ parameter.description }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% for task in module.tasks %}
+<div class="section">
+    <div class="table">
+        <div class="table-caption">
+            <img id="task-toggle"
+                 src="../img/iconmonstr-tag-4-24.png"
+                 onclick="toggle_display('task-{{ task.cssid}}', 'table-row-group')"/>Task - {{ task.displayname }}
+        </div>
+        <div class="table-row-group" id="task-{{ task.cssid }}">
+            <div class="table-row">
+                <div class="table-cell">{{ task.settings|safe }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% include 'footer.html' %}

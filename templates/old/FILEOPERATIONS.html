@@ -1,0 +1,18 @@
+{# Template for FILEOPERATIONS tasks #}
+    <table>
+        <tr><td class="column-header">Action</td>
+            <td class="column-header">Source</td>
+            <td class="column-header">Destination</td>
+        </tr>
+        {% for task in fileoperationtasks %}
+        <TR>
+            <td class="label-FILEOPERATIONS">{{ task.type }}</td>
+            <td>{{ task.sourcelocation }}</td>
+            {% if task.hasdestination %}
+            <td>{{ task.destinationlocation }}</td>
+            {% else %}
+            <td>N/A</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>

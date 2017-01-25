@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ module.title }}</title>
+    <link rel="stylesheet" type="text/css" href="../../css/bbreport.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/vs.css" />
+    <script src="../../js/bbreport.js"></script>
+</head>
+<body>
+<div id="content">
+    <table>
+        <tr><td class="title-1" colspan="2">{{ module.title }}</td></tr>
+        <tr><td>GUID</td>            <td>{{ module.guid }}</td></tr>
+        <tr><td>Enabled</td>         <td>{{ module.enabled }}</td></tr>
+        <tr><td>Description</td>     <td>{{ module.description }}</td></tr>
+        <tr><td>Version</td>         <td>{{ module.version }}</td></tr>
+        <tr><td>Version Comment</td> <td>{{ module.versioncomment }}</td></tr>
+        <tr><td>Folder Path</td>     <td>{{ module.folderpath }}</td></tr>
+    </table>
+    {% if module.parameters|length > 0 %}
+    <table>
+        <tr><td class="title-2" colspan="4">Parameters</td></tr>
+        <tr><td class="column-header">Name</td>
+            <td class="column-header">Type</td>
+            <td class="column-header">Default Value</td>
+            <td class="column-header">Description</td>
+        </tr>
+        {% for parameter in module.parameters %}
+        <tr><td>{{ parameter.name }}</td>
+            <td>{{ parameter.type }}</td>
+            <td>{{ parameter.value }}</td>
+            <td>{{ parameter.description }}</td></tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    {% for task in module.tasks %}
+    <div class="task-container">
+        <div class="task-table">
+        <table>
+            <tr><td class="title-2" colspan="2">Task - {{ task.displayname }}<span class="guid">{{ task.guid }}</span></td></tr>
+        </table>
+        {{ task.settings|safe }}
+        </div>
+        {% if task.enabled == 'no' %}
+        <div class="overlay"><div class="disabled">DISABLED</div></div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

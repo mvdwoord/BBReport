@@ -1,67 +1,116 @@
+<!--
+    The index.html does not get the normal header, as the file sits on level higher as the rest
+    When serving files via a webserver this poses no issue, but this is intended to be served
+    from the filesystem.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Building Block Instant Report</title>
-    <link rel="stylesheet" type="text/css" href="../css/bbreport.css"/>
-    <script src="../js/bbreport.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/bbreport.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/vs.css"/>
+    <script src="./js/bbreport.js"></script>
 </head>
 <body>
-<div id="content">
+<div class="content">
+    <!--region Projects-->
     {% if index.projects %}
-    <div class="section">
-        <div class="section-head">
-                <img class="toggle"
-                     src="../img/iconmonstr-arrow-up-32-32.png"
-                     id="index-projects-toggle"
-                     onclick="toggle_display('index-projects', 'index-projects-toggle')" />
-            Projects
-        </div>
-        <div class="section-body" id="index-projects">
-            {% for project in index.projects %}
-            <div class="section-item">
-                <a href="projects/{{ project.guid }}.html">{{ project.name }} </a>
+    <div class="section" id="projects">
+        <div class="table">
+            <div class="table-caption">
+                <img id="projects-toggle"
+                     src="../img/iconmonstr-task-1-24.png"
+                     onclick="toggle_display('projects-group', 'table-row-group')"/>Projects
             </div>
-            {% endfor %}
+            <div class="table-row-group" id="projects-group">
+                <div class="table-row">
+                    <div class="table-head"></div>
+                    <div class="table-head">Project Name</div>
+                    <div class="table-head guid">GUID</div>
+                </div>
+                {% for project in index.projects %}
+                <div class="table-row">
+                    <div class="table-cell">
+                        &nbsp;
+                    </div>
+                    <div class="table-cell">
+                        <a href="./projects/{{ project.guid }}.html">{{ project.name }}</a>
+                    </div>
+                    <div class="table-cell guid">
+                        {{ project.guid }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
-    {% if index.resources %}
-    <div class="section">
-        <div class="section-head">
-                <img class="toggle"
-                     src="../img/iconmonstr-arrow-up-32-32.png"
-                     id="index-resources-toggle"
-                     onclick="toggle_display('index-resources', 'index-resources-toggle')" />
-            Resources
-        </div>
-        <div class="section-body" id="index-resources">
-            {% for resource in index.resources %}
-            <div class="section-item">
-                <a href="resources/{{ resource.guid }}.html">{{ resource.name }} </a>
+    <!--endregion-->
+    <!--region Modules-->
+    {% if index.projects %}
+    <div class="section" id="modules">
+        <div class="table">
+            <div class="table-caption">
+                <img id="modules-toggle"
+                     src="../img/iconmonstr-arrow-12-24.png"
+                     onclick="toggle_display('modules-group', 'table-row-group')"/>Modules
             </div>
-            {% endfor %}
+            <div class="table-row-group" id="modules-group">
+                <div class="table-row">
+                    <div class="table-head"></div>
+                    <div class="table-head">Module Name</div>
+                    <div class="table-head guid">GUID</div>
+                </div>
+                {% for module in index.modules %}
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div>&nbsp;</div>
+                    </div>
+                    <div class="table-cell">
+                        <div><a href="./modules/{{ module.guid }}.html">{{ module.name }}</a></div>
+                    </div>
+                    <div class="table-cell guid">
+                        <div>{{ module.guid }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
-    {% if index.modules %}
-    <div class="section">
-        <div class="section-head">
-                <img class="toggle"
-                     src="../img/iconmonstr-arrow-up-32-32.png"
-                     id="index-modules-toggle"
-                     onclick="toggle_display('index-modules', 'index-modules-toggle')" />
-            Modules
-        </div>
-        <div class="section-body" id="index-modules">
-            {% for module in index.modules %}
-            <div class="section-item">
-                <a href="modules/{{ module.guid }}.html">{{ module.name }} </a>
+    <!--endregion-->
+    <!--region Resources-->
+    {% if index.projects %}
+    <div class="section" id="resources">
+        <div class="table">
+            <div class="table-caption">
+                <img id="resources-toggle"
+                     src="../img/iconmonstr-star-3-24.png"
+                     onclick="toggle_display('resources-group', 'table-row-group')"/>Resources
             </div>
-            {% endfor %}
+            <div class="table-row-group" id="resources-group">
+                <div class="table-row">
+                    <div class="table-head"></div>
+                    <div class="table-head">Resource Name</div>
+                    <div class="table-head guid">GUID</div>
+                </div>
+                {% for resource in index.resources %}
+                <div class="table-row">
+                    <div class="table-cell">
+                        <div>&nbsp;</div>
+                    </div>
+                    <div class="table-cell">
+                        <div><a href="./resources/{{ resource.guid }}.html">{{ resource.name }}</a></div>
+                    </div>
+                    <div class="table-cell guid">
+                        <div>{{ resource.guid }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
-</div>
-</body>
-</html>
+    <!--endregion-->
+    {% include 'footer.html' %}
