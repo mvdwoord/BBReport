@@ -232,7 +232,7 @@ def parameter_to_dict(p):
     # Input tab
     on_import = p.find('.//inputtiming/importbb').text == 'yes'
     import_prev = p.xpath('.//inputtiming/importbb/@showprev')[0] == 'yes'
-    on_schedule = p.xpath('.//inputtiming/schedulejob')[0] == 'yes'
+    on_schedule = p.xpath('.//inputtiming/schedulejob')[0].text == 'yes'
     sched_prev = p.xpath('.//inputtiming/schedulejob/@showprev')[0] == 'yes'
     # Cannot be sure these exist, but assume False if missing
     try:
