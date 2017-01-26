@@ -14,6 +14,28 @@
 </head>
 <body>
 <div class="content">
+    <div class="header">
+        <div class="table">
+            <div class="table-caption">
+                <img src="../img/iconmonstr-info-2-24.png"
+                     onclick="toggle_display('header-info', 'table-row-group')"/>Building Block Report
+            </div>
+            <div class="table-row-group" id="header-info">
+                <div class="table-row">
+                    <div class="table-cell column-1"></div>
+                    <div class="table-cell column-2">File:</div>
+                    <div class="table-cell">{{ bbfilename }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-cell column-1"></div>
+                    <div class="table-cell column-2">Modified:</div>
+                    <div class="table-cell">{{ bbtimestamp }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content">
     <!--region Projects-->
     {% if index.projects %}
     <div class="section" id="projects">
@@ -48,7 +70,7 @@
     {% endif %}
     <!--endregion-->
     <!--region Modules-->
-    {% if index.projects %}
+    {% if index.modules %}
     <div class="section" id="modules">
         <div class="table">
             <div class="table-caption">
@@ -81,7 +103,7 @@
     {% endif %}
     <!--endregion-->
     <!--region Resources-->
-    {% if index.projects %}
+    {% if index.resources %}
     <div class="section" id="resources">
         <div class="table">
             <div class="table-caption">

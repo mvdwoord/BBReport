@@ -6,6 +6,7 @@ import argparse
 import binascii
 import os
 import shutil
+import time
 import zlib
 
 # import 3rd party
@@ -61,20 +62,20 @@ parameter_type = {
 }
 
 task_displayname = {
-    'PWRSHELL': "Execute Powershell Command",
-    'COMMAND': "Execute a Command",
-    'DOWNLOAD': "Download a resource",
-    'SHUTDOWN': "Shutdown or Reboot",
-    'REGISTRY': "Apply Registry Settings",
+    'PWRSHELL'      : "Execute Powershell Command",
+    'COMMAND'       : "Execute a Command",
+    'DOWNLOAD'      : "Download a resource",
+    'SHUTDOWN'      : "Shutdown or Reboot",
+    'REGISTRY'      : "Apply Registry Settings",
     'FILEOPERATIONS': "Perform File Operations",
-    'LINUX_COMMAND': "Execute a Command (UNIX/Linux)",
+    'LINUX_COMMAND' : "Execute a Command (UNIX/Linux)",
     'LINUX_DOWNLOAD': "Download a resource (UNIX/Linux)"
 }
 
 resourcetype_displayname = {
-    'DATABASE': 'Stored in database',
-    'FILESHARE': "Located on Fileshare",
-    'URLRESOURCE': 'Located at URL',
+    'DATABASE'         : 'Stored in database',
+    'FILESHARE'        : "Located on Fileshare",
+    'URLRESOURCE'      : 'Located at URL',
     'AMRESOURCEPACKAGE': 'RES ONE Automation Resource Package'
 }
 
@@ -92,11 +93,36 @@ permission_action = {
 }
 
 fileext_lexer = {
-    'cmd': 'winbatch',
-    'sh': 'bash',
-    'ps1': 'powershell',
+    'cmd' : 'winbatch',
+    'sh'  : 'bash',
+    'ps1' : 'powershell',
     'psm1': 'powershell',
-    'pl': 'perl'
+    'pl'  : 'perl'
+}
+
+icons = {
+    'module'        : 'iconmonstr-arrow-12-',
+    'set'           : 'iconmonstr-arrow-71-',
+    'get'           : 'iconmonstr-arrow-72-',
+    'block'         : 'iconmonstr-brick-6-',
+    'unchecked'     : 'iconmonstr-checkbox-11-',
+    'checked'       : 'iconmonstr-checkbox-9-',
+    'command'       : 'iconmonstr-code-5-',
+    'linux_command' : 'iconmonstr-code-5-',
+    'registry'      : 'iconmonstr-cube-11-',
+    'both'          : 'iconmonstr-cursor-20-',
+    'download'      : 'iconmonstr-download-6-',
+    'linux_download': 'iconmonstr-download-6-',
+    'show'          : 'iconmonstr-eye-6-',
+    'file'          : 'iconmonstr-file-10-',
+    'link'          : 'iconmonstr-link-1-',
+    'security'      : 'iconmonstr-lock-2-',
+    'shutdown'      : 'iconmonstr-power-on-off-8-',
+    'trash'         : 'iconmonstr-recycling-1-',
+    'resource'      : 'iconmonstr-star-3-',
+    'parameter'     : 'iconmonstr-tag-4-',
+    'project'       : 'iconmonstr-task-1-',
+    'clock'         : 'iconmonstr-time-9-'
 }
 
 """ Access masks are a special beast.
@@ -104,24 +130,24 @@ Full details: https://blogs.msdn.microsoft.com/openspecification/2010/04/01/abou
 but we will stick to the values used in AM"""
 access_mask = {
     # -1 is used for deletions, mask is irrelevant in such cases
-    '-1': "",
+    '-1'         : "",
     # NTFS / Fileshare permissions
-    '1048854': "Write",
-    '1179785': "Read",
-    '1179817': "Read & Execute",
-    '1180063': "Read & Write",
-    '1180095': "Read, Write & Execute",
-    '1245631': "Modify",
-    '2032127': "Full Control",
+    '1048854'    : "Write",
+    '1179785'    : "Read",
+    '1179817'    : "Read & Execute",
+    '1180063'    : "Read & Write",
+    '1180095'    : "Read, Write & Execute",
+    '1245631'    : "Modify",
+    '2032127'    : "Full Control",
     # Registry permissions
-    '268435456': "Full Control",
+    '268435456'  : "Full Control",
     '-2147483648': "Read",
     # Printer permissions
-    '131080': "Print",
-    '983052': "Manage Printers",
-    '983088': "Manage Documents",
-    '983096': "Print & Manage Documents",
-    '983100': "Manage Printers & Documents"
+    '131080'     : "Print",
+    '983052'     : "Manage Printers",
+    '983088'     : "Manage Documents",
+    '983096'     : "Print & Manage Documents",
+    '983100'     : "Manage Printers & Documents"
 }
 
 # Global variable to hold the full Building Block tree for cross referencing.
@@ -140,6 +166,8 @@ def process_buildingblock(bb, output_folder):
             shutil.copytree('./css/', './output/css/')
             shutil.copytree('./img/', './output/img/')
             shutil.copytree('./js/', './output/js/')
+            # grab file details
+
             global bbtree
             bbtree = (etree.parse(buildingblock))
 
@@ -175,10 +203,10 @@ def process_buildingblock(bb, output_folder):
 
             # Finally we create an index page to tie it all together
             index = {
-                'filename': bb,
+                'filename' : bb,
                 'resources': [],
-                'projects': [],
-                'modules': []
+                'projects' : [],
+                'modules'  : []
             }
             for resource_element in bbtree.findall('/buildingblock/resources/resource'):
                 resourcetype = resource_element.find('.//properties/type').text
@@ -223,7 +251,7 @@ def process_buildingblock(bb, output_folder):
 
 
 def parameter_to_dict(p):
-    """Retruns a dictionary from a param xml element"""
+    """Returns a dictionary from a param xml element"""
     value_element = p.find('.//value1')
     value = ""
     if value_element is not None:
@@ -241,18 +269,18 @@ def parameter_to_dict(p):
         sched_erase = False
 
     parameterdict = {
-        'name': p.find('.//name').text,
-        'type': parameter_type.get(p.find('.//type').text, "Unknown"),
-        'value': value,
+        'name'       : p.find('.//name').text,
+        'type'       : parameter_type.get(p.find('.//type').text, "Unknown"),
+        'value'      : value,
         'description': (p.find('.//description')).text,
-        'input': {
-            'on_import': on_import,
+        'input'      : {
+            'on_import'  : on_import,
             'import_prev': import_prev,
             'on_schedule': on_schedule,
-            'sched_prev': sched_prev,
+            'sched_prev' : sched_prev,
             'sched_erase': sched_erase
         },
-        'links': []
+        'links'      : []
     }
     if len(p.find('.//selection')) > 0:
         for module in p.findall('.//selection/module'):
@@ -271,9 +299,9 @@ def parameter_to_dict(p):
             link = {
                 'targettype': targettype,
                 'targetguid': targetguid,
-                'linktype': linktype_display.get(linktype, 'Error'),
+                'linktype'  : linktype_display.get(linktype, 'Error'),
                 'targetname': targetname,
-                'name': module.find('.//param').text
+                'name'      : module.find('.//param').text
             }
             parameterdict['links'].append(link)
 
@@ -299,14 +327,16 @@ def task_to_dict(t):
     """Returns a dictionary from a task xml element"""
     # Determine type and gather common info
     tasktype = t.find('.//properties/type').text
+    taskicon = icons.get(tasktype.lower(), 'iconmonstr-code-5-')
     guid = t.find('.//properties/guid').text
     displayname = task_displayname.get(tasktype, "Unknown (" + tasktype + ")")
     taskdict = {
-        'type': tasktype,
+        'type'       : tasktype,
         'displayname': displayname,
-        'guid': guid,
-        'cssid': guid[-13:-1],
-        'enabled': t.find('.//properties/enabled').text
+        'icon'       : taskicon,
+        'guid'       : guid,
+        'cssid'      : guid[-13:-1],
+        'enabled'    : t.find('.//properties/enabled').text
     }
     # Tasks have type specific properties which need to be dealt with individually
     # We'll use the 'settings' of the taskdict to store a rendered partial table
@@ -589,6 +619,8 @@ def main():
     args = parser.parse_args()
     buildingblock = args.file
     output_folder = args.output
+    env.globals['bbfilename'] = buildingblock
+    env.globals['bbtimestamp'] = time.strftime('%d %B %Y', time.gmtime(os.stat(buildingblock).st_mtime))
     process_buildingblock(buildingblock, output_folder)
 
 if __name__ == "__main__":

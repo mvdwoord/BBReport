@@ -31,6 +31,36 @@ Color_20  = #DAE1EF
     padding: 5px;
 }
 
+.header {
+    text-align: center;
+    font-size: 32px;
+    background-color: #466BB0;
+    color: white;
+}
+
+.header .table-caption {
+    background-color: #466BB0;
+}
+
+.header .table {
+    background-color: floralwhite;
+    color: black;
+    text-align: left;
+    font-size: 16px;
+}
+
+.header .table-row-group {
+    display: none;
+}
+
+.header .column-1 {
+    width: 14px;
+}
+
+.header .column-2 {
+    width: 200px;
+}
+
 /*region Table Display Classes*/
 .table {
     display: table;
@@ -68,12 +98,16 @@ Color_20  = #DAE1EF
 }
 /*endregion*/
 
-.section .table-caption {
+.table-caption {
+    padding: 5px;
     text-align: center;
     font-size: 28px;
     color: white;
+}
+
+.section .table-caption {
+
     background-color: #6B89C0;
-    padding: 5px;
 }
 
 .table-caption img {

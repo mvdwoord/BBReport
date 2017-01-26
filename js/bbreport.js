@@ -3,7 +3,7 @@
  */
 function toggle_display(id, style) {
     var e = document.getElementById(id);
-
-    e.style.display = (e.style.display === 'none') ? style : 'none';
+    var current_style = getComputedStyle(e).display;
+    e.style.display = (current_style === 'none') ? style : 'none';
 
 }
