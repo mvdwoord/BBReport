@@ -1,91 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ project.title }}</title>
-    <link rel="stylesheet" type="text/css" href="../../css/bbreport.css" />
-    <link rel="stylesheet" type="text/css" href="../../css/vs.css" />
-    <script src="../../js/bbreport.js"></script>
-</head>
-<body>
+{% include 'header.html' %}
 {% import 'macros.html' as macros with context %}
+<div class="banner">{{ project.title }}</div>
+<div class="section" id="project-properties">
+    <div class="table">
+        <div class="table-row-group">
+            <div class="table-row">
+                <div class="table-cell">GUID</div>
+                <div>{{ project.guid }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Enabled</div>
+                <div class="table-cell">{{ project.enabled }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Description</div>
+                <div class="table-cell">{{ project.description }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Version</div>
+                <div class="table-cell">{{ project.version }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Version Comment</div>
+                <div class="table-cell">{{ project.versioncomment }}</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">Folder Path</div>
+                <div class="table-cell">{{ project.folderpath }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if project.parameters|length > 0 %}
+<!-- Parameter table (nested)-->
+<div class="section" id="project-parameters">
+    <div class="table">
+        <div class="table-caption">
+            <img id="parameters-toggle"
+                 src="../img/iconmonstr-tag-4-24.png"
+                 onclick="toggle_display('parameters-group', 'table-row-group')"/>Parameters
+        </div>
+        <div class="table-row-group" id="parameters-group">
+            <div class="table-row">
+                <!-- Parameter table header-->
+                <div class="table-cell">
+                    <div class="table">
+                        <div class="table-row">
+                            <div class="table-head parameter-name">Name</div>
+                            <div class="table-head icon">&nbsp;</div>
+                            <div class="table-head parameter-type">Type</div>
+                            <div class="table-head parameter-value">Default Value</div>
+                            <div class="table-head parameter-description">Description</div>
+                            <div class="table-head icon"><img src="../../img/iconmonstr-brick-6-12.png"
+                                                              title="When importing Building Block"/></div>
+                            <div class="table-head icon"><img src="../../img/iconmonstr-eye-6-12.png"
+                                                              title="Show previous value"/></div>
+                            <div class="table-head icon"><img src="../../img/iconmonstr-time-9-12.png"
+                                                              title="When scheduling Job"/></div>
+                            <div class="table-head icon"><img src="../../img/iconmonstr-eye-6-12.png"
+                                                              title="Show previous value"/></div>
+                            <div class="table-head icon"><img src="../../img/iconmonstr-recycling-1-12.png"
+                                                              title="Erase previous value when rescheduling"/></div>
 
-<div class="content">
-    <table>
-        <tr><td class="title-1" colspan="2">{{ project.title }}</td></tr>
-        <tr><td>GUID</td>            <td>{{ project.guid }}</td></tr>
-        <tr><td>Enabled</td>         <td>{{ project.enabled }}</td></tr>
-        <tr><td>Description</td>     <td>{{ project.description }}</td></tr>
-        <tr><td>Version</td>         <td>{{ project.version }}</td></tr>
-        <tr><td>Version Comment</td> <td>{{ project.versioncomment }}</td></tr>
-        <tr><td>Folder Path</td>     <td>{{ project.folderpath }}</td></tr>
-    </table>
-    {% if project.parameters|length > 0 %}
-    <table>
-        <tr><td class="title-2" colspan="5">Parameters</td><td class="title-2" colspan="5">Input</td> </tr>
-        <tr><th class="param-name">Name</th>
-            <th class="icon">&nbsp;</th>
-            <th>Type</th>
-            <th>Default Value</th>
-            <th>Description</th>
-            <th class="icon"><img src="../../img/iconmonstr-brick-6-12.png"
-                                  title="When importing Building Block"/></th>
-            <th class="icon"><img src="../../img/iconmonstr-eye-6-12.png"
-                                  title="Show previous value"/></th>
-            <th class="icon"><img src="../../img/iconmonstr-time-9-12.png"
-                                  title="When scheduling Job"/></th>
-            <th class="icon"><img src="../../img/iconmonstr-eye-6-12.png"
-                                  title="Show previous value"/></th>
-            <th class="icon"><img src="../../img/iconmonstr-recycling-1-12.png"
-                                  title="Erase previous value when rescheduling"/></th>
-        </tr>
-        {% for parameter in project.parameters %}
-        <tr><td>{{ parameter.name }}</td>
-            <td>
-                {% if parameter.links|length > 0 %}
-                <img src="../../img/iconmonstr-link-1-12.png"
-                     id="toggle-{{ parameter.name }}-links"
-                     onclick="toggle_display('{{ parameter.name }}-links', 'toggle-{{ parameter.name }}-links', false)"
-                     />
-                {% else %}
-                &nbsp;
-                {% endif %}
-            </td>
-            <td>{{ parameter.type }}</td>
-            <td>{{ parameter.value }}</td>
-            <td>{{ parameter.description }}</td>
-            <td>{{ macros.column_checkbox(parameter.input.on_import) }}</td>
-            <td>{{ macros.column_checkbox(parameter.input.importprev) }}</td>
-            <td>{{ macros.column_checkbox(parameter.input.on_schedule) }}</td>
-            <td>{{ macros.column_checkbox(parameter.input.sched_prev) }}</td>
-            <td>{{ macros.column_checkbox(parameter.input.sched_erase) }}</td>
-        </tr>
-        {% if parameter.links|length > 0 %}
-        <tr id="{{ parameter.name }}-links"
-            class="parameter-links-section">
-            <td colspan="10">
-                <table>
-                {% for link in parameter.links %}
-                    <tr class="parameter-link-item">
-                        <td>
-                    {% if link.linktype =='Set' %}
-                        Set initial value for {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
-                    {% elif link.linktype =='Get' %}
-                        Get final value from {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
-                    {% elif link.linktype =='Both' %}
-                        Set, then Get from {{ link.name }} in <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for parameter in project.parameters %}
+            <div class="table-row">
+                <!-- Parameter table -->
+                <div class="table-cell">
+                    <div class="table">
+                        <div class="table-row">
+                            <div class="table-cell parameter-name">{{ parameter.name }}</div>
+                            <div class="table-cell icon">
+                                {% if parameter.links|length > 0 %}
+                                <img src="../../img/iconmonstr-link-1-12.png"
+                                     id="toggle-{{ parameter.name }}-links"
+                                     onclick="toggle_display('{{ parameter.name }}-links', 'table')"/>
+                                {% else %}
+                                &nbsp;&nbsp;
+                                {% endif %}
+                            </div>
+                            <div class="table-cell parameter-type">{{ parameter.type }}</div>
+                            <div class="table-cell parameter-value">{{ parameter.value }}</div>
+                            <div class="table-cell parameter-description">{{ parameter.description }}</div>
+                            <div class="table-cell icon">{{ macros.column_checkbox(parameter.input.on_import) }}</div>
+                            <div class="table-cell icon">{{ macros.column_checkbox(parameter.input.importprev) }}</div>
+                            <div class="table-cell icon">{{ macros.column_checkbox(parameter.input.on_schedule) }}</div>
+                            <div class="table-cell icon">{{ macros.column_checkbox(parameter.input.sched_prev) }}</div>
+                            <div class="table-cell icon">{{ macros.column_checkbox(parameter.input.sched_erase) }}</div>
+
+                        </div>
+                    </div>
+
+                    {% if parameter.links|length > 0 %}
+                    <div class="table parameter-links" id="{{ parameter.name }}-links">
+                        {% for link in parameter.links %}
+                        <div class="table-row">
+                            <div class="table-cell parameter-link">
+                                {% if link.linktype =='Set' %}
+                                Set initial value for {{ link.name }} in
+                                <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname}}</a>
+                                {% elif link.linktype =='Get' %}
+                                Get final value from {{ link.name }} in
+                                <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname}}</a>
+                                {% elif link.linktype =='Both' %}
+                                Set, then Get from {{ link.name }} in
+                                <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{ link.targetname}}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                     {% endif %}
-                    </td>
-                    </tr>
-                {% endfor %}
-                    </table>
-            </td>
-        </tr>
-        {% endif  %}
-        {% endfor %}
-    </table>
-    {% endif %}
 
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
     <table>
         <tr><td class="title-2" colspan="3">Modules</td></tr>
         <tr><th class="column-header">Name</th>

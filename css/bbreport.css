@@ -68,6 +68,10 @@ Color_20  = #DAE1EF
     border-collapse: collapse;
 }
 
+.table.parameter-links {
+    display: none;
+}
+
 .table-caption {
     display: table-caption;
     position: relative;
@@ -88,8 +92,13 @@ Color_20  = #DAE1EF
 .table-cell, .table-head {
     display: table-cell;
     vertical-align: middle;
-    padding: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
+
+
 
 .table-head {
     font-weight: bold;
@@ -105,9 +114,43 @@ Color_20  = #DAE1EF
     color: white;
 }
 
+.table-head.icon,
+.table-cell.icon{
+    width: 14px;
+    max-width: 14px;
+}
+
+.table-head.parameter-name,
+.table-cell.parameter-name{
+    width: 200px;
+    max-width: 200px;
+}
+
+.table-head.parameter-type,
+.table-cell.parameter-type{
+    width: 60px;
+    max-width: 60px;
+}
+
+.table-head.parameter-value,
+.table-cell.parameter-value{
+    width: 300px;
+    max-width: 300px;
+}
+
+.table-cell.parameter-link {
+    padding-left: 214px;
+}
+
 .section .table-caption {
 
     background-color: #6B89C0;
+}
+
+.table-caption span.parameter-input {
+    width: 70px;
+    position: absolute;
+    right: 0px;
 }
 
 .table-caption img {
