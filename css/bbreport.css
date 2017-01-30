@@ -98,6 +98,9 @@ Color_20  = #DAE1EF
     padding-bottom: 1px;
 }
 
+.table-cell.disabled {
+    color: gray;
+}
 
 
 .table-head {
@@ -252,7 +255,7 @@ span.guid {
     opacity: .8;
 }
 
-div.disabled {
+div.disabled-task {
     font-size: xx-large;
     text-align: center;
     position: absolute;
@@ -288,7 +291,7 @@ th.enabled {
     width: 80px;
 }
 
-th.guid {
+.table-head.module-guid {
     width: 300px;
     text-align: center;
 }
@@ -307,7 +310,7 @@ td.enabled {
     text-align: center;
 }
 
-td.guid {
+.table-cell.module-guid {
     text-align: center;
     font-family: monospace;
 }
