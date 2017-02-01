@@ -66,6 +66,7 @@ Color_20  = #DAE1EF
     display: table;
     width: 100%;
     border-collapse: collapse;
+    position: relative;
 }
 
 .table.parameter-links {
@@ -102,6 +103,19 @@ Color_20  = #DAE1EF
     color: gray;
 }
 
+.disabled-overlay {
+  position: absolute;
+  background-color: lightgrey;
+  font-size: xx-large;
+  text-align: center;
+  width: 100%;
+  height: calc(100% - 42px);
+  top: 42px;
+  left: 0px;
+  background-color: gray;
+  opacity: .6;
+  line-height: 100px;
+}
 
 .table-head {
     font-weight: bold;

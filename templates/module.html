@@ -67,6 +67,11 @@
                  src="../img/{{ task.icon }}24.png"
                  onclick="toggle_display('task-{{ task.cssid }}', 'table-row-group')"/>Task - {{ task.displayname }}
         </div>
+        {% if not task.enabled %}
+        <div class="disabled-overlay">
+            DISABLED
+        </div>
+        {% endif %}
         <div class="table-row-group" id="task-{{ task.cssid }}">
             <div class="table-row">
                 <div class="table-cell">{{ task.settings|safe }}</div>

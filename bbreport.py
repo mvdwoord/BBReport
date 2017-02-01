@@ -336,7 +336,7 @@ def task_to_dict(t):
         'icon'       : taskicon,
         'guid'       : guid,
         'cssid'      : guid[-13:-1],
-        'enabled'    : t.find('.//properties/enabled').text
+        'enabled'    : t.find('.//properties/enabled').text == 'yes'
     }
     # Tasks have type specific properties which need to be dealt with individually
     # We'll use the 'settings' of the taskdict to store a rendered partial table
