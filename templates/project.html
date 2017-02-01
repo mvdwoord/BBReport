@@ -100,14 +100,17 @@
                         <div class="table-row">
                             <div class="table-cell parameter-link">
                                 {% if link.linktype =='Set' %}
+                                <img src="../img/iconmonstr-arrow-71-12.png" />
                                 Set initial value for {{ link.name }} in
                                 <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{
                                     link.targetname}}</a>
                                 {% elif link.linktype =='Get' %}
+                                <img src="../img/iconmonstr-arrow-72-12.png" />
                                 Get final value from {{ link.name }} in
                                 <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{
                                     link.targetname}}</a>
                                 {% elif link.linktype =='Both' %}
+                                <img src="../img/iconmonstr-cursor-20-12.png" />
                                 Set, then Get from {{ link.name }} in
                                 <a href="../{{ link.targettype }}s/{{ link.targetguid|safe }}.html">{{
                                     link.targetname}}</a>

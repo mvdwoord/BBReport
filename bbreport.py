@@ -330,13 +330,15 @@ def task_to_dict(t):
     taskicon = icons.get(tasktype.lower(), 'iconmonstr-code-5-')
     guid = t.find('.//properties/guid').text
     displayname = task_displayname.get(tasktype, "Unknown (" + tasktype + ")")
+    context = t.findtext('.//username')
     taskdict = {
         'type'       : tasktype,
         'displayname': displayname,
         'icon'       : taskicon,
         'guid'       : guid,
         'cssid'      : guid[-13:-1],
-        'enabled'    : t.find('.//properties/enabled').text == 'yes'
+        'enabled'    : t.find('.//properties/enabled').text == 'yes',
+        'context'    : context
     }
     # Tasks have type specific properties which need to be dealt with individually
     # We'll use the 'settings' of the taskdict to store a rendered partial table
