@@ -463,7 +463,7 @@ def task_to_dict(t):
         commandline = t.find('.//commandline').text
         # If the script is not referenced in the commandline it is ignored, so will we.
         hasscripttab = '@[SCRIPT]' in commandline.upper()
-        scriptext = t.find('.//scriptext').text
+        scriptext = t.findtext('.//scriptext')
         lexer = fileext_lexer.get(scriptext, 'none')
         command = {
             'commandline': commandline,
@@ -476,7 +476,7 @@ def task_to_dict(t):
             'terminate': t.find('.//terminate').text,
             'terminatetree': t.find('.//terminatetree').text,
             'grablog': t.find('.//grablogfile').text,
-            'script': t.find('.//script').text,
+            'script': t.findtext('.//script'),
             'lexer': lexer
         }
 
@@ -486,7 +486,7 @@ def task_to_dict(t):
         commandline = t.find('.//commandline').text
         # If the script is not referenced in the commandline it is ignored, so will we.
         hasscripttab = '@[SCRIPT]' in commandline.upper()
-        scriptext = t.find('.//scriptext').text
+        scriptext = t.findtext('.//scriptext')
         lexer = fileext_lexer.get(scriptext, 'none')
         command = {
             'commandline': commandline,
@@ -497,7 +497,7 @@ def task_to_dict(t):
             'timeout': t.find('.//timeout').text,
             'terminate': t.find('.//terminate').text,
             'grablog': t.find('.//grablogfile').text,
-            'script': t.find('.//script').text,
+            'script': t.findtext('.//script'),
             'lexer': lexer
         }
 
